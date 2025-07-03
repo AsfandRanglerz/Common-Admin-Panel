@@ -1,4 +1,9 @@
-﻿.m-l--125 {
+﻿input[name="password"],
+input[name="confirmPassword"] {
+    padding-right: 2rem !important;
+}
+
+.m-l--125 {
     margin-left: -125px
 }
 
@@ -1673,6 +1678,8 @@
 .font-overline {
     text-decoration: overline
 }
+
+
 
 .bg-red {
     background-color: #f44336 !important;
@@ -6761,6 +6768,7 @@ body.layout-3 .main-footer {
     font-size: 10px;
     letter-spacing: 0.5px
 }
+
 
 .main-sidebar .sidebar-menu {
     padding: 0;

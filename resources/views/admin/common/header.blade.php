@@ -79,6 +79,8 @@
                 <span class="d-sm-none d-lg-inline-block"></span></a>
             <div class="dropdown-menu dropdown-menu-right pullDown">
                 <div class="dropdown-title">
+                    Hello,
+                    {{-- {{ Auth::guard('admin')->check() ? Auth::guard('admin')->user()->name : (Auth::guard('subadmin')->check() ? Auth::guard('subadmin')->user()->name : 'Guest') }} --}}
                     {{ Auth::guard('admin')->check() ? Auth::guard('admin')->user()->name : (Auth::guard('subadmin')->check() ? Auth::guard('subadmin')->user()->name : 'Guest') }}
                 </div>
 

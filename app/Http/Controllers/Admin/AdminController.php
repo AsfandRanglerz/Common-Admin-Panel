@@ -53,28 +53,51 @@ class AdminController extends Controller
 }
 
     public function update_profile(Request $request)
+
     {
-        $request->validate([
-            'name' => 'required',
-            'email' => 'required',
-            'phone' => 'required'
-        ]);
+
+        // $request->validate([
+
+        //     'name' => 'required',
+
+        //     'email' => 'required',
+
+        //     'phone' => 'required'
+
+        // ]);
+
         $data = $request->only(['name', 'email', 'phone']);
 
+
+
         if ($request->hasFile('image')) {
+
             $file = $request->file('image');
+
             $extension = $file->getClientOriginalExtension();
+
             $filename = time() . '.' . $extension;
+
             $file->move('public/admin/assets/images/admin', $filename);
+
             $data['image'] = 'public/admin/assets/images/admin/' . $filename;
+
         }
+
         if (Auth::guard('admin')->check()) {
+
             Admin::find(Auth::guard('admin')->id())->update($data);
+
         } else {
+
             SubAdmin::find(Auth::guard('subadmin')->id())->update($data);
+
         }
-        return back()->with(['status' => true, 'message' => 'Profile Updated Successfully']);
+
+        return back()->with('success', 'Profile updated successfully');
+
     }
+
     public function forgetPassword()
     {
         return view('admin.auth.forgetPassword');
