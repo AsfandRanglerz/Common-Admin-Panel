@@ -14,13 +14,13 @@
                             <div class="card-header">
                                 <h4>Sub Admins</h4>
                             </div>
-                            <div class="card-body table-responsive">
+                            <div class="card-body table-striped table-bordered table-responsive">
                                 @if (Auth::guard('admin')->check() ||
                                         ($sideMenuPermissions->has('Sub Admins') && $sideMenuPermissions['Sub Admins']->contains('create')))
                                     <a class="btn btn-primary mb-3" href="{{ route('subadmin.create') }}">Create</a>
                                 @endif
 
-                                <table class="table table-bordered" id="table_id_events">
+                                <table class="table" id="table_id_events">
                                     <thead>
                                         <tr>
                                             <th>Sr.</th>

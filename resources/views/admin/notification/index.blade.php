@@ -20,8 +20,7 @@
                             <div class="card-header">
                                 <h4>Notifications</h4>
                             </div>
-                            <div class="card-body table-responsive">
-
+                            <div class="card-body table-striped table-bordered table-responsive">
                                 @if (Auth::guard('admin')->check() ||
                                         ($sideMenuPermissions->has('Notifications') && $sideMenuPermissions['Notifications']->contains('create')))
                                     <a class="btn btn-primary mb-3 text-white" data-toggle="modal"
@@ -30,7 +29,7 @@
                                     </a>
                                 @endif
 
-                                <table class="table table-striped" id="table_id_events">
+                                <table class="table" id="table_id_events">
                                     <thead>
                                         <tr>
                                             <th>Sr.</th>
