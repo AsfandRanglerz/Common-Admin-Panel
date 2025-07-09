@@ -106,11 +106,7 @@
 
                                             @csrf
 
-                                            <div class="card-header">
-
-                                                <h4>Edit Profile</h4>
-
-                                            </div>
+                                           
 
                                             {{--                                        @if (\Illuminate\Support\Facades\Session::has('errors')) --}}
 

@@ -194,7 +194,7 @@ class AdminController extends Controller
         if (!$adminExists) {
             Auth::guard('subadmin')->logout();
         }
-        return redirect('admin')->with('success', 'Log Out Successfully');
+        return redirect('admin')->with('success', 'Logged Out Successfully');
     }
 
 

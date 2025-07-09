@@ -49,7 +49,7 @@ class AuthController extends Controller
             ],
             $remember_me
         )) {
-            return redirect('admin/dashboard')->with('success', 'Login Successfully!');
+            return redirect('admin/dashboard')->with('success', 'Logged In Successfully!');
         }
 
         $subAdmin = SubAdmin::where('email', $request->email)->first();
