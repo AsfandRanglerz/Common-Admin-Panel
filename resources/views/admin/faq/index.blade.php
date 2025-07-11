@@ -86,30 +86,52 @@
 
 @endsection
 
-@section('js')
+@section('css')
+    <!-- jQuery UI CSS -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+@endsection
 
-    <!-- DataTables -->
+@section('js')
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- jQuery UI -->
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <!-- DataTables JS -->
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+    <!-- SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         $(document).ready(function() {
+            // Initialize DataTable
             $('#table_id_events').DataTable({
                 paging: false,
-                info: false
+                info: false,
+                // Disable sorting for the first and last column
+                columnDefs: [{
+                    orderable: false,
+                    targets: [0, -1]
+                }]
             });
 
-            // SweetAlert Delete
+            // SweetAlert Delete Confirmation
             $('.show_confirm').on('click', function(e) {
                 e.preventDefault();
                 var formId = $(this).data('form');
                 var form = $('#' + formId);
 
-                swal({
-                    title: "Are you sure you want to delete this record?",
-                    text: "If you delete this FAQ's record, it will be gone forever.",
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true,
-                }).then(function(willDelete) {
-                    if (willDelete) {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
                         $.ajax({
                             url: form.attr('action'),
                             type: 'POST',
@@ -118,18 +140,20 @@
                                 _token: '{{ csrf_token() }}'
                             },
                             success: function(response) {
-                                swal({
-                                    title: "Success!",
-                                    text: "Record deleted successfully",
-                                    icon: "success",
-                                    button: false,
-                                    timer: 3000
-                                }).then(() => {
+                                Swal.fire(
+                                    'Deleted!',
+                                    'Your FAQ has been deleted.',
+                                    'success'
+                                ).then(() => {
                                     location.reload();
                                 });
                             },
                             error: function() {
-                                swal("Error!", "Failed to delete record.", "error");
+                                Swal.fire(
+                                    'Error!',
+                                    'Failed to delete FAQ.',
+                                    'error'
+                                );
                             }
                         });
                     }
@@ -137,15 +161,15 @@
             });
 
             // Toastr for reorder success
-            const message = localStorage.getItem('toastMessage');
-            if (message) {
-                toastr.success(message);
-                localStorage.removeItem('toastMessage');
-            }
+            @if (session('success'))
+                toastr.success('{{ session('success') }}');
+            @endif
 
-            // jQuery-based sortable using jQuery UI
+            // Initialize sortable functionality
             $('#sortable-faqs').sortable({
                 handle: '.sort-handler',
+                axis: 'y',
+                placeholder: "ui-state-highlight",
                 update: function(event, ui) {
                     var order = [];
                     $('#sortable-faqs tr').each(function(index) {
@@ -163,15 +187,18 @@
                             order: order,
                             _token: '{{ csrf_token() }}'
                         }),
-                        success: function() {
-                            localStorage.setItem('toastMessage',
-                                'Alignment has been updated successfully');
-                            location.reload();
+                        success: function(response) {
+                            toastr.success('Order updated successfully');
+                            // Optional: Refresh the page to update serial numbers
+                            // location.reload();
+                        },
+                        error: function(xhr) {
+                            toastr.error('Error updating order');
+                            console.error(xhr.responseText);
                         }
                     });
                 }
             });
         });
     </script>
-
 @endsection
