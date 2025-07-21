@@ -85,20 +85,24 @@
 @endsection
 
 @section('js')
-    <script type="text/javascript">
+    <script>
         $(document).ready(function() {
+            // Initialize DataTable
+            if ($.fn.DataTable.isDataTable('#table_id_events')) {
+                $('#table_id_events').DataTable().destroy();
+            }
             $('#table_id_events').DataTable();
 
-            // SweetAlert Delete
-            $('.show_confirm').click(function(e) {
-                e.preventDefault();
-                const formId = $(this).data('form');
-                const form = $('#' + formId);
+            // SweetAlert2 delete confirmation
+            $('.show_confirm').click(function(event) {
+                event.preventDefault();
+                var formId = $(this).data("form");
+                var form = document.getElementById(formId);
 
                 Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You won’t be able to revert this!",
-                    icon: 'warning',
+                    title: "Are you sure you want to delete this record?",
+                    text: "If you delete this User record, it will be gone forever.",
+                    icon: "warning",
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
                     cancelButtonColor: '#d33',
@@ -106,37 +110,40 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: form.attr('action'),
+                            url: form.action,
                             type: 'POST',
                             data: {
                                 _method: 'DELETE',
                                 _token: '{{ csrf_token() }}'
                             },
                             success: function(response) {
-                                Swal.fire('Deleted!', 'Your FAQ has been deleted.',
-                                        'success')
-                                    .then(() => location.reload());
+                                Swal.fire({
+                                    title: "Success!",
+                                    text: "Record deleted successfully.",
+                                    icon: "success",
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    location.reload();
+                                });
                             },
                             error: function() {
-                                Swal.fire('Error!', 'Failed to delete FAQ.', 'error');
+                                Swal.fire("Error!", "Failed to delete record.",
+                                    "error");
                             }
                         });
                     }
                 });
             });
 
-            // Toastr notification
-            @if (session('success'))
-                toastr.success('{{ session('success') }}');
-            @endif
 
-            // Sortable
-            $('#sortable-faqs').sortable({
+            // Drag and Drop Reordering (jQuery version using Sortable + AJAX)
+            var sortable = new Sortable(document.getElementById('sortable-faqs'), {
+                animation: 150,
                 handle: '.sort-handler',
-                axis: 'y',
-                placeholder: "ui-state-highlight",
-                update: function(event, ui) {
-                    let order = [];
+                onEnd: function() {
+                    var order = [];
+
                     $('#sortable-faqs tr').each(function(index) {
                         order.push({
                             id: $(this).data('id'),
@@ -145,19 +152,21 @@
                     });
 
                     $.ajax({
-                        url: "{{ route('faq.reorder') }}",
+                        url: "{{ route('blog.reorder') }}",
                         method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
                         contentType: 'application/json',
                         data: JSON.stringify({
-                            order: order,
-                            _token: '{{ csrf_token() }}'
+                            order: order
                         }),
-                        success: function(response) {
-                            toastr.success('Order updated successfully');
+                        success: function() {
+                            // window.location.reload();
+                            toastr.success('Alignment has been updated successfully');
                         },
-                        error: function(xhr) {
-                            toastr.error('Error updating order');
-                            console.error(xhr.responseText);
+                        error: function() {
+                            toastr.error('Failed to reorder blogs.');
                         }
                     });
                 }

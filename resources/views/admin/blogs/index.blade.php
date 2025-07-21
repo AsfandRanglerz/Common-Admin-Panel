@@ -135,7 +135,7 @@
 
                 Swal.fire({
                     title: "Are you sure you want to delete this record?",
-                    text: "If you delete this User record, it will be gone forever.",
+                    text: "If you delete this Blog record, it will be gone forever.",
                     icon: "warning",
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
