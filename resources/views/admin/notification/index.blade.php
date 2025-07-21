@@ -62,7 +62,7 @@
                                                             @method('DELETE')
                                                             <button class="show_confirm btn"
                                                                 data-form="delete-form-{{ $notification->id }}"
-                                                                style="background-color: #cb84fe;" type="submit">
+                                                                style="background-color: #ff5608;" type="submit">
                                                                 <i class="fa fa-trash"></i>
                                                             </button>
                                                         </form>
