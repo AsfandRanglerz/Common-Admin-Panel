@@ -1,4 +1,8 @@
-﻿input[name="password"],
+﻿.sidebar-mini .main-sidebar .sidebar-menu>li.active svg {
+    filter: brightness(0) invert(1);
+}
+
+input[name="password"],
 input[name="confirmPassword"] {
     padding-right: 2rem !important;
 }
@@ -6413,7 +6417,7 @@ body.sidebar-gone .main-sidebar {
     background-color: #fff;
     left: 65px;
     top: 10px;
-    width: 200px;
+    width: max-content;
     display: none;
     box-shadow: 0 0 30px rgba(0, 0, 0, 0.1)
 }
@@ -6727,7 +6731,7 @@ body.layout-3 .main-footer {
 }
 
 .main-sidebar .sidebar-brand a .header-logo {
-    height: 30px
+    height: auto;
 }
 
 .main-sidebar .sidebar-brand a .logo-name {
@@ -6856,6 +6860,7 @@ body.layout-3 .main-footer {
 
 .main-sidebar .sidebar-menu li a span {
     margin-top: 3px;
+    margin-left: 8px;
     width: 100%
 }
 

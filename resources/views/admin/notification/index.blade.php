@@ -1,14 +1,5 @@
 @extends('admin.layout.app')
 @section('title', 'Notifications')
-@php
-    if (auth('subadmin')->check()) {
-        $userType = 'subadmin';
-    } elseif (auth('web')->check()) {
-        $userType = 'web';
-    } else {
-        $userType = 'guest';
-    }
-@endphp
 
 @section('content')
     <div class="main-content" style="min-height: 562px;">
@@ -23,18 +14,29 @@
                             <div class="card-body table-striped table-bordered table-responsive">
                                 @if (Auth::guard('admin')->check() ||
                                         ($sideMenuPermissions->has('Notifications') && $sideMenuPermissions['Notifications']->contains('create')))
-                                    <a class="btn btn-primary mb-3 text-white" data-toggle="modal"
-                                        data-target="#createUserModal">
-                                        Create
-                                    </a>
+                                    <a class="btn mb-3 text-white" data-bs-toggle="modal" style="background-color: #ff5608;"
+                                        data-bs-target="#createUserModal">Create</a>
                                 @endif
 
+                                @if (Auth::guard('admin')->check() ||
+                                        ($sideMenuPermissions->has('Notifications') && $sideMenuPermissions['Notifications']->contains('delete')))
+                                    <form action="{{ route('notifications.deleteAll') }}" method="POST"
+                                        class="d-inline-block float-right">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-primary mb-3 delete_all">
+                                            Delete All
+                                        </button>
+                                    </form>
+                                @endif
                                 <table class="table" id="table_id_events">
                                     <thead>
                                         <tr>
                                             <th>Sr.</th>
                                             <th>Image</th>
-                                            <th>Description</th>
+                                            <th>Title</th>
+                                            <th>Message</th>
+                                            <th>Created At</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -42,31 +44,28 @@
                                         @foreach ($notifications as $notification)
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $notification->Image }}</td>
+                                                <td>
+                                                    <img src="{{ asset($notification->image) }}" alt="Notification Image"
+                                                        width="60" height="60">
+                                                </td>
+                                                <td>{{ $notification->title }}</td>
                                                 <td>{{ \Illuminate\Support\Str::limit(strip_tags($notification->description), 150, '...') }}
                                                 </td>
+                                                <td>{{ $notification->created_at->format('d M Y') }}</td>
                                                 <td>
                                                     @if (Auth::guard('admin')->check() ||
-                                                            ($sideMenuPermissions->has('Notifications') && $sideMenuPermissions['Notifications']->contains('edit')))
-                                                        <a href="#" class="btn btn-primary me-2"
-                                                            style="float: left; margin-right: 8px;">
-                                                            <i class="fa fa-edit"></i>
-                                                        </a>
-                                                    @endif
-
-                                                    @if (Auth::guard('admin')->check() ||
                                                             ($sideMenuPermissions->has('Notifications') && $sideMenuPermissions['Notifications']->contains('delete')))
-                                                        <form id="delete-form-{{ $notification->id }}" action="#"
-                                                            method="POST">
+                                                        <form id="delete-form-{{ $notification->id }}"
+                                                            action="{{ route('notification.destroy', $notification->id) }}"
+                                                            method="POST" style="display:inline-block; margin-left: 10px">
                                                             @csrf
                                                             @method('DELETE')
+                                                            <button class="show_confirm btn"
+                                                                data-form="delete-form-{{ $notification->id }}"
+                                                                style="background-color: #cb84fe;" type="submit">
+                                                                <i class="fa fa-trash"></i>
+                                                            </button>
                                                         </form>
-
-                                                        <button class="show_confirm btn d-flex gap-4"
-                                                            style="background-color: #ff5608;"
-                                                            data-form="delete-form-{{ $notification->id }}" type="button">
-                                                            <span><i class="fa fa-trash"></i></span>
-                                                        </button>
                                                     @endif
                                                 </td>
                                             </tr>
@@ -86,55 +85,67 @@
         aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <form id="createUserForm" enctype="multipart/form-data">
+                <form id="createUserForm" method="POST" action="{{ route('notification.store') }}"
+                    enctype="multipart/form-data">
                     @csrf
                     <div class="modal-header">
-                        <h5 class="modal-title">Create New Notification</h5>
-                        <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                        <h5 class="modal-title">Create Notification</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
+
                     <div class="modal-body">
+                        <input type="hidden" name="user_type" value="user">
 
-                        <!-- User Type Dropdown -->
-                        <div class="form-group">
-                            <label for="user_type">Select User Type</label>
-                            <select class="form-control" id="user_type" name="user_type" required>
-                                <option value="" selected disabled>-- Select User Type --</option>
-                                <option value="subadmin">Sub Admin</option>
-                                <option value="web">User</option>
-                            </select>
-                        </div>
-
-                        <!-- Users Dropdown with Select All and Select2 -->
-                        <div class="form-group">
-                            <label for="user_ids">Select User(s)</label>
-                            <div class="d-flex mb-2">
-                                <button type="button" class="btn btn-sm btn-success" id="select_all_users_btn">Select All
-                                    Users</button>
+                        <div class="form-group" id="user_field">
+                            <label><strong>Sellers <span style="color: red;">*</span></strong></label>
+                            <div class="form-check mb-2">
+                                <input type="checkbox" id="select_all_users" class="form-check-input">
+                                <label class="form-check-label" for="select_all_users">Select All</label>
                             </div>
-                            <select class="form-control" id="user_ids" name="user_ids[]" multiple="multiple" required
-                                style="width: 100%;">
-                                <option disabled>Select a user type first</option>
+                            <select name="users[]" id="users" class="form-control select2" multiple>
+                                @foreach ($users as $user)
+                                    <option value="{{ $user->id }}"
+                                        {{ old('users') && in_array($user->id, old('users')) ? 'selected' : '' }}>
+                                        {{ $user->name }}
+                                    </option>
+                                @endforeach
                             </select>
+                            @error('users')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
                         </div>
 
-                        <!-- Image -->
                         <div class="form-group">
-                            <label for="userImage">Image</label>
+                            <label for="userImage">Image <span style="color: red;">*</span></label>
                             <input type="file" class="form-control-file" id="userImage" name="image" accept="image/*"
                                 required>
                             <small class="text-danger">Max 2MB image size allowed.</small>
                         </div>
 
-                        <!-- Description -->
                         <div class="form-group">
-                            <label for="userDescription">Description</label>
-                            <textarea class="form-control" id="userDescription" name="description" rows="3" required></textarea>
+                            <label><strong>Title <span style="color:red;">*</span></strong></label>
+                            <input type="text" name="title" class="form-control" placeholder="Title" required>
+                            @error('title')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
                         </div>
 
+                        <div class="form-group">
+                            <label><strong>Description <span style="color:red;">*</span></strong></label>
+                            <textarea name="description" class="form-control" placeholder="Type your message here..." rows="4" required></textarea>
+                            @error('description')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
+
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Create Notification</button>
+                        <button type="submit" class="btn btn-primary" id="createBtn">
+                            <span id="createBtnText">Create Notification</span>
+                            <span id="createSpinner" style="display: none;">
+                                <i class="fa fa-spinner fa-spin"></i>
+                            </span>
+                        </button>
                     </div>
                 </form>
             </div>
@@ -143,104 +154,84 @@
 @endsection
 
 @section('js')
-    <!-- Include DataTable -->
     <script>
         $(document).ready(function() {
-            if ($.fn.DataTable.isDataTable('#table_id_events')) {
-                $('#table_id_events').DataTable().destroy();
-            }
             $('#table_id_events').DataTable();
-        });
-    </script>
-
-    <!-- Include SweetAlert -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
-
-    <!-- Include Select2 -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-    <script type="text/javascript">
-        $(document).ready(function() {
-            // Initialize Select2
-            $('#user_ids').select2({
-                placeholder: "Select User(s)",
-                width: 'resolve'
+            $('.select2').select2({
+                placeholder: "Select sellers",
+                allowClear: true
             });
 
-            // Select All Users Button
-            $('#select_all_users_btn').click(function() {
-                $('#user_ids option').prop('selected', true);
-                $('#user_ids').trigger('change');
+            // Re-initialize Select2 when modal opens (fix for hidden content)
+            $('#createUserModal').on('shown.bs.modal', function() {
+                $('#users.select2').select2({
+                    dropdownParent: $('#createUserModal'),
+                    placeholder: "Select sellers",
+                    allowClear: true
+                });
             });
 
-            // Delete Confirmation
+            $('#select_all_users').on('change', function() {
+                $('#users > option').prop('selected', this.checked).trigger('change');
+            });
+
+            $('#users').on('change', function() {
+                $('#select_all_users').prop('checked', $('#users option:selected').length === $(
+                    '#users option').length);
+            });
+
+            $('form#createUserForm').submit(function() {
+                $("#createSpinner").show();
+                $("#createBtnText").hide();
+                $("#createBtn").prop("disabled", true);
+            });
+
             $('.show_confirm').click(function(event) {
+                event.preventDefault();
                 var formId = $(this).data("form");
                 var form = document.getElementById(formId);
-                event.preventDefault();
 
                 swal({
-                        title: "Are you sure you want to delete this record?",
-                        text: "If you delete this User record, it will be gone forever.",
-                        icon: "warning",
-                        buttons: true,
-                        dangerMode: true,
-                    })
-                    .then((willDelete) => {
-                        if (willDelete) {
-                            $.ajax({
-                                url: form.action,
-                                type: 'POST',
-                                data: {
-                                    _method: 'DELETE',
-                                    _token: '{{ csrf_token() }}'
-                                },
-                                success: function(response) {
-                                    swal({
-                                        title: "Success!",
-                                        text: "Record deleted successfully",
-                                        icon: "success",
-                                        button: false,
-                                        timer: 3000
-                                    }).then(() => {
+                    title: "Are you sure you want to delete this record?",
+                    text: "This action cannot be undone.",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true
+                }).then((willDelete) => {
+                    if (willDelete) {
+                        $.ajax({
+                            url: form.action,
+                            type: 'POST',
+                            data: {
+                                _method: 'DELETE',
+                                _token: '{{ csrf_token() }}'
+                            },
+                            success: function(response) {
+                                swal("Deleted!", "Record has been deleted.", "success")
+                                    .then(() => {
                                         location.reload();
                                     });
-                                },
-                                error: function(xhr) {
-                                    swal("Error!", "Failed to delete record.", "error");
-                                }
-                            });
-                        }
-                    });
+                            },
+                            error: function() {
+                                swal("Error!", "Failed to delete record.", "error");
+                            }
+                        });
+                    }
+                });
             });
 
-            // AJAX to load users based on user type
-            $('#user_type').change(function() {
-                var userType = $(this).val();
-                $('#user_ids').html('<option disabled>Loading...</option>');
-
-                $.ajax({
-                    url: '{{ url('admin/get-users-by-type') }}',
-                    method: 'GET',
-                    data: {
-                        type: userType
-                    },
-                    success: function(response) {
-                        $('#user_ids').empty();
-                        if (response.length === 0) {
-                            $('#user_ids').append('<option disabled>No users found</option>');
-                        } else {
-                            response.forEach(function(user) {
-                                $('#user_ids').append(
-                                    `<option value="${user.id}">${user.name} (${user.email})</option>`
-                                );
-                            });
-                        }
-                        $('#user_ids').trigger('change');
-                    },
-                    error: function() {
-                        $('#user_ids').html('<option disabled>Error loading users</option>');
+            $('.delete_all').click(function(event) {
+                var form = $(this).closest("form");
+                event.preventDefault();
+                swal({
+                    title: "Are you sure you want to delete all records?",
+                    text: "This will permanently remove all records and cannot be undone.",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true
+                }).then((willDelete) => {
+                    if (willDelete) {
+                        form.submit();
                     }
                 });
             });

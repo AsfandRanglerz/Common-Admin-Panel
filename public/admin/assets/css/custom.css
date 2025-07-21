@@ -298,8 +298,8 @@ body .form-control[type=number]::-webkit-outer-spin-button {
 }
 
 .main-sidebar .sidebar-brand a .header-logo {
-    width: 120px;
-    height: unset;
+    width: 150px;
+    height: auto;
 }
 
 .main-sidebar .sidebar-brand {

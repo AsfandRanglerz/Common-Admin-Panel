@@ -37,7 +37,6 @@ Route::post('/seo-bulk', [SeoController::class, 'storeBulk'])
 
 
 
-Route::post('farmer/login', [AuthController::class, 'login'])->name('login');
 
 
 Route::middleware('auth:sanctum')->group(function () {
