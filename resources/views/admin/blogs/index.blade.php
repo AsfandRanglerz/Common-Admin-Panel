@@ -67,6 +67,9 @@
                                                         <span class="custom-switch-indicator"></span>
                                                         <span class="custom-switch-description">
                                                             {{ $blog->toggle ? 'Activated' : 'Deactivated' }}
+                                                            {{-- @php
+                                                                dd($blog->toggle);
+                                                            @endphp --}}
                                                         </span>
                                                     </label>
                                                 </td>
@@ -210,7 +213,7 @@
             function updateUserStatus(userId, status, reason = null) {
                 let $descriptionSpan = currentToggle.siblings('.custom-switch-description');
                 $.ajax({
-                    url: "{{ route('user.toggle-status') }}",
+                    url: "{{ route('blog.toggle-status') }}",
                     type: "POST",
                     data: {
                         _token: '{{ csrf_token() }}',

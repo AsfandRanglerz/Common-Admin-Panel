@@ -35,14 +35,16 @@
 
 @section('js')
     <!-- CKEditor -->
-    <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
     <script>
         CKEDITOR.replace('description');
 
+
         $(document).ready(function() {
+
+            // ✅ CKEditor Form Validation on Submit
             $('#termConditionForm').on('submit', function(e) {
                 // Update CKEditor content into textarea
-                for (instance in CKEDITOR.instances) {
+                for (let instance in CKEDITOR.instances) {
                     CKEDITOR.instances[instance].updateElement();
                 }
 
@@ -56,16 +58,22 @@
                 if (!desc || desc.replace(/&nbsp;|<[^>]*>/g, '').trim() === '') {
                     e.preventDefault();
                     $('#description').addClass('is-invalid');
-                    $('#description-error').text('Description is required.').css('font-size', '14px')
+                    $('#description-error')
+                        .text('Description is required.')
+                        .css('font-size', '14px')
                         .show();
                 }
             });
 
-            // Optional: Clear error on click inside CKEditor
-            CKEDITOR.instances.description.on('focus', function() {
-                $('#description').removeClass('is-invalid');
-                $('#description-error').hide();
-            });
+            // ✅ Remove Error When CKEditor Is Focused
+            if (CKEDITOR.instances.description) {
+                CKEDITOR.instances.description.on('focus', function() {
+                    $('#description').removeClass('is-invalid');
+                    $('#description-error').hide();
+                });
+            }
+
         });
     </script>
+
 @endsection

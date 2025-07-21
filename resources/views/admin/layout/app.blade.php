@@ -53,6 +53,8 @@
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
     <script src="https://cdn.ckeditor.com/4.21.0/standard/ckeditor.js"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
 
     <!-- ========== Vendor JS (Public Assets) ========== -->
     <script src="{{ asset('public/admin/assets/js/app.min.js') }}"></script>

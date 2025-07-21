@@ -80,48 +80,6 @@
             $('#table_id_events').DataTable()
         })
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
-    <script type="text/javascript">
-        $('.show_confirm').click(function(event) {
-            var formId = $(this).data("form");
-            var form = document.getElementById(formId);
-            event.preventDefault();
-            swal({
-                    title: "Are you sure?",
-                    text: "This action cannot be undone!",
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true,
-                })
-                .then((willDelete) => {
-                    if (willDelete) {
-                        // Send AJAX request
-                        $.ajax({
-                            url: form.action,
-                            type: 'POST',
-                            data: {
-                                _method: 'DELETE',
-                                _token: '{{ csrf_token() }}'
-                            },
-                            success: function(response) {
 
-                                swal({
-                                    title: "Success!",
-                                    text: "Record deleted successfully!",
-                                    icon: "success",
-                                    button: false,
-                                    timer: 3000
-                                }).then(() => {
-                                    location.reload();
-                                });
-                            },
-                            error: function(xhr) {
-                                swal("Error!", "Failed to delete record.", "error");
-                            }
-                        });
-                    }
-                });
-        });
-    </script>
 
 @endsection

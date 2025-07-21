@@ -1,9 +1,9 @@
-@extends('admin.layout.app')
+{{-- @extends('admin.layout.app')
 
 @section('title', 'Create Contact')
 
-@section('content')
-    <div class="main-content">
+@section('content') --}}
+{{-- <div class="main-content">
         <section class="section">
             <div class="section-body">
                 <a class="btn btn-primary mb-3" href="{{ url()->previous() }}">Back</a>
@@ -46,71 +46,71 @@
                 </form>
             </div>
         </section>
-    </div>
-@endsection
+    </div> --}}
+{{-- @endsection --}}
 
-@section('js')
-    {{-- Toastr CDN --}}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+{{-- @section('js') --}}
+{{-- Toastr CDN --}}
 
-    <script>
-        document.getElementById('add_event').addEventListener('submit', function(e) {
-            e.preventDefault(); // Prevent default form submission
-            const form = e.target;
-            const formData = new FormData(form);
 
-            toastr.options = {
-                "closeButton": true,
-                "progressBar": true,
-                "positionClass": "toast-top-right",
-                "timeOut": "3000",
-            };
+<script>
+    // document.getElementById('add_event').addEventListener('submit', function(e) {
+    //     e.preventDefault(); // Prevent default form submission
+    //     const form = e.target;
+    //     const formData = new FormData(form);
 
-            // Show loading message
-            toastr.info('Creating contact...');
+    //     toastr.options = {
+    //         "closeButton": true,
+    //         "progressBar": true,
+    //         "positionClass": "toast-top-right",
+    //         "timeOut": "3000",
+    //     };
 
-            fetch(form.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
-                            'content'),
-                    },
-                })
-                .then(response => {
-                    // Check if response is not okay (like 404, 500 etc.)
-                    if (!response.ok) {
-                        return response.json().then(err => {
-                            throw err; // Handle errors
-                        });
-                    }
-                    return response.json(); // Parse JSON if the response is okay
-                })
-                .then(data => {
-                    if (data.success) {
-                        toastr.success(data.message);
-                        // Redirect after a delay
-                        setTimeout(() => {
-                            window.location.href = "{{ route('contact.index') }}";
-                        }, 2000);
-                    } else {
-                        // Handle validation errors
-                        if (data.errors) {
-                            const errors = data.errors;
-                            for (const field in errors) {
-                                toastr.error(errors[field][0]);
-                            }
-                        } else {
-                            toastr.error(data.message);
-                        }
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    toastr.error(error.message || 'Something went wrong. Please try again.');
-                });
-        });
-    </script>
-@endsection
+    //     // Show loading message
+    //     toastr.info('Creating contact...');
+
+    //     fetch(form.action, {
+    //             method: 'POST',
+    //             body: formData,
+    //             headers: {
+    //                 'X-Requested-With': 'XMLHttpRequest',
+    //                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+    //                     'content'),
+    //             },
+    //         })
+    //         .then(response => {
+    //             // Check if response is not okay (like 404, 500 etc.)
+    //             if (!response.ok) {
+    //                 return response.json().then(err => {
+    //                     throw err; // Handle errors
+    //                 });
+    //             }
+    //             return response.json(); // Parse JSON if the response is okay
+    //         })
+    //         .then(data => {
+    //             if (data.success) {
+    //                 toastr.success(data.message);
+    //                 // Redirect after a delay
+    //                 setTimeout(() => {
+    //                     window.location.href = "{{ route('contact.index') }}";
+    //                 }, 2000);
+    //             } else {
+    //                 // Handle validation errors
+    //                 if (data.errors) {
+    //                     const errors = data.errors;
+    //                     for (const field in errors) {
+    //                         toastr.error(errors[field][0]);
+    //                     }
+    //                 } else {
+    //                     toastr.error(data.message);
+    //                 }
+    //             }
+    //         })
+    //         .catch(error => {
+    //             console.error('Error:', error);
+    //             toastr.error(error.message || 'Something went wrong. Please try again.');
+    //         });
+    // });
+    // 
+</script>
+{{-- @endsection --}}
