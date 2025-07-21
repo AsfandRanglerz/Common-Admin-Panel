@@ -41,10 +41,10 @@
                                                 </td> --}}
                                                 <td>
                                                     @if (Auth::guard('admin')->check() ||
-                                                            ($sideMenuPermissions->has('Roles') && $sideMenuPermissions['Roles']->contains('edit')))
-                                                        <a class="btn" style="background-color: #ff5608;"
-                                                            href="{{ route('role.permissions', $role->id) }}"><span
-                                                                class="fa fa-eye"></span></a>
+                                                            ($sideMenuPermissions->has('Roles') && $sideMenuPermissions['Roles']->contains('view')))
+                                                        <a class="btn" style="background-color: #cb84fe;"
+                                                            href="{{ route('role.permissions', $role->id) }}"><i
+                                                                class="fa fa-eye"></i></a>
                                                     @endif
                                                 </td>
 
@@ -61,7 +61,7 @@
 
                                                         <!-- Delete Button -->
                                                         <button class="show_confirm btn d-flex gap-4"
-                                                            style="background-color: #ff5608;"
+                                                            style="background-color: #cb84fe;"
                                                             data-form="delete-form-{{ $role->id }}" type="button">
                                                             <span><i class="fa fa-trash"></i></span>
 
@@ -80,7 +80,6 @@
         </section>
     </div>
 @endsection
-
 @section('js')
 
     @if (\Illuminate\Support\Facades\Session::has('message'))
@@ -88,58 +87,57 @@
             toastr.success('{{ \Illuminate\Support\Facades\Session::get('message') }}');
         </script>
     @endif
-    <!-- Initialize DataTable -->
-    <script>
+
+    <script type="text/javascript">
         $(document).ready(function() {
+
+            // ✅ DataTable initialize
             if ($.fn.DataTable.isDataTable('#table_id_events')) {
                 $('#table_id_events').DataTable().destroy();
             }
             $('#table_id_events').DataTable();
-        });
-    </script>
-    <!-- Include SweetAlert -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
-    <script type="text/javascript">
-        $('.show_confirm').click(function(event) {
-            var formId = $(this).data("form");
-            var form = document.getElementById(formId);
-            event.preventDefault();
 
-            swal({
-                    title: "Are you sure you want to delete this record?",
+            // ✅ Delete alert confirmation
+            $(document).on('click', '.show_confirm', function(event) {
+                event.preventDefault();
+                var formId = $(this).data("form");
+                var form = document.getElementById(formId);
+
+                Swal.fire({
+                    title: 'Are you sure you want to delete this record?',
                     text: "If you delete this Role record, it will be gone forever.",
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true,
-                })
-                .then((willDelete) => {
-                    if (willDelete) {
-                        // Send AJAX request to delete
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
                         $.ajax({
                             url: form.action,
-                            type: 'POST',
+                            method: 'POST',
                             data: {
                                 _method: 'DELETE',
                                 _token: '{{ csrf_token() }}'
                             },
-                            success: function(response) {
-                                swal({
-                                    title: "Success!",
-                                    text: "Record deleted successfully",
-                                    icon: "success",
-                                    button: false,
-                                    timer: 3000
-
-                                }).then(() => {
-                                    location.reload();
-                                });
+                            success: function(res) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success!',
+                                    text: 'Recored deleted successfully.',
+                                    showConfirmButton: false,
+                                    timer: 2000
+                                }).then(() => location.reload());
                             },
-                            error: function(xhr) {
-                                swal("Error!", "Failed to delete record.", "error");
+                            error: function() {
+                                Swal.fire('Error!', 'Failed to delete the record.',
+                                    'error');
                             }
                         });
                     }
                 });
+            });
         });
     </script>
+
 @endsection

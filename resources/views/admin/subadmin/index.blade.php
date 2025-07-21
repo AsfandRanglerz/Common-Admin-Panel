@@ -2,10 +2,7 @@
 @section('title', 'Sub Admins')
 
 @section('content')
-
-
-    {{-- Sub Admins Table --}}
-    <div class="main-content">
+    <div class="main-content" style="min-height: 562px;">
         <section class="section">
             <div class="section-body">
                 <div class="row">
@@ -19,7 +16,6 @@
                                         ($sideMenuPermissions->has('Sub Admins') && $sideMenuPermissions['Sub Admins']->contains('create')))
                                     <a class="btn btn-primary mb-3" href="{{ route('subadmin.create') }}">Create</a>
                                 @endif
-
                                 <table class="table" id="table_id_events">
                                     <thead>
                                         <tr>
@@ -37,8 +33,7 @@
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $subAdmin->name }}</td>
-                                                <td><a href="mailto:{{ $subAdmin->email }}">{{ $subAdmin->email }}</a>
-                                                </td>
+                                                <td><a href="mailto:{{ $subAdmin->email }}">{{ $subAdmin->email }}</a></td>
                                                 <td>{{ $subAdmin->roles->pluck('name')->join(', ') ?: 'No Role' }}</td>
                                                 <td>
                                                     @if ($subAdmin->image && file_exists($subAdmin->image))
@@ -79,8 +74,8 @@
                                                                 @method('DELETE')
                                                             </form>
 
-                                                            <button class="show_confirm btn d-flex gap-4"
-                                                                style="background-color: #ff5608;"
+                                                            <button class="show_confirm btn"
+                                                                style="background-color: #cb84fe;"
                                                                 data-form="delete-form-{{ $subAdmin->id }}" type="button">
                                                                 <span><i class="fa fa-trash"></i></span>
                                                             </button>
@@ -91,7 +86,6 @@
                                         @endforeach
                                     </tbody>
                                 </table>
-
                             </div>
                         </div>
                     </div>
@@ -103,52 +97,57 @@
 
 @section('js')
 
-    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-    <script>
-        $('.show_confirm').click(function(event) {
-            var formId = $(this).data("form");
-            var form = document.getElementById(formId);
-            event.preventDefault();
+    <script type="text/javascript">
+        $(document).ready(function() {
 
-            swal({
-                    title: "Are you sure you want to delete this record?",
+            // ✅ Initialize DataTable
+            if ($.fn.DataTable.isDataTable('#table_id_events')) {
+                $('#table_id_events').DataTable().destroy();
+            }
+            $('#table_id_events').DataTable();
+
+            // ✅ Delete confirmation using SweetAlert2
+            $(document).on('click', '.show_confirm', function(e) {
+                e.preventDefault();
+                let formId = $(this).data('form');
+                let form = document.getElementById(formId);
+
+                Swal.fire({
+                    title: 'Are you sure you want to delete this record?',
                     text: "If you delete this Sub-Admin record, it will be gone forever.",
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true,
-                })
-                .then((willDelete) => {
-                    if (willDelete) {
-                        // Send AJAX request to delete
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
                         $.ajax({
                             url: form.action,
-                            type: 'POST',
+                            method: 'POST',
                             data: {
                                 _method: 'DELETE',
                                 _token: '{{ csrf_token() }}'
                             },
-                            success: function(response) {
-                                swal({
-                                    title: "Success!",
-                                    text: "Record deleted successfully",
-                                    icon: "success",
-                                    button: false,
-                                    timer: 3000
-                                }).then(() => {
-                                    location.reload();
-                                });
+                            success: function(res) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success!',
+                                    text: 'Recored deleted successfully.',
+                                    showConfirmButton: false,
+                                    timer: 2000
+                                }).then(() => location.reload());
                             },
-                            error: function(xhr) {
-                                swal("Error!", "Failed to delete record.", "error");
+                            error: function() {
+                                Swal.fire('Error!', 'Failed to delete the record.',
+                                    'error');
                             }
                         });
                     }
                 });
-        });
+            });
 
-
-        // Toggle status functionality
-        $(document).ready(function() {
+            // ✅ Toggle Status
             $('.toggle-status').on('change', function() {
                 var subAdminId = $(this).data('id');
                 var status = $(this).is(':checked') ? 1 : 0;
@@ -172,12 +171,13 @@
                             $switch.find('.toggle-status').prop('checked', !status);
                         }
                     },
-                    error: function(xhr) {
-                        toastr.error(xhr.responseJSON?.message || 'Failed to update status.');
+                    error: function() {
+                        toastr.error('Failed to update status.');
                         $switch.find('.toggle-status').prop('checked', !status);
                     }
                 });
             });
+
         });
     </script>
 @endsection

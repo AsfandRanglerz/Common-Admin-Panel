@@ -60,12 +60,15 @@
 
             @if (Auth::guard('admin')->check() ||
                     ($sideMenuPermissions->has('Faqs') && $sideMenuPermissions['Faqs']->contains('view')))
-                {{-- FAQS --}}
                 <li class="dropdown {{ request()->is('admin/faq*') ? 'active' : '' }}">
-                    <a href="{{ url('admin/faq-index') }}" class="nav-link"><i
-                            data-feather="settings"></i><span>FAQ's</span></a>
+                    <a href="{{ url('admin/faq') }}" class="nav-link">
+                        <i data-feather="settings"></i>
+                        <span>FAQ's</span>
+                    </a>
                 </li>
             @endif
+
+
 
             {{--  About Us --}}
 

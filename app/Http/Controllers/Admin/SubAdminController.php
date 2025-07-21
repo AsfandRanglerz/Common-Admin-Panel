@@ -67,9 +67,8 @@ class SubAdminController extends Controller
         'email' => [
             'required',
             'email',
-            'regex:/^[\w\.\-]+@[a-zA-Z0-9\-]+\.[a-zA-Z]{2,6}$/'
+            'regex:/^[\w\.\-]+@[a-zA-Z0-9\-]+\.[a-zA-Z]{2,6}$/', 'unique:sub_admins,email', // Ensure email is unique
         ],
-        'phone' => 'required|regex:/^[0-9]+$/|max:15',
         'role' => 'required|exists:roles,id',
         'image' => 'nullable|image|max:2048',
         'password' => 'nullable|min:6'
@@ -137,28 +136,26 @@ public function edit($id)
 
     public function update(Request $request, $id)
     {
-    //  $request->validate([
-    //     'name' => 'required|string|max:255',
-    //     'email' => [
-    //         'required',
-    //         'email',
-    //         'regex:/^[\w\.\-]+@[a-zA-Z0-9\-]+\.[a-zA-Z]{2,6}$/'
-    //     ],
-    //     'phone' => 'required|regex:/^[0-9]+$/|max:15',
-    //     'role' => 'required|exists:roles,id',
-    //     'image' => 'nullable|image|max:2048',
-    //     'password' => 'nullable|min:6', // Optional password field
-    // ]);
+     $validator = Validator::make($request->all(), [
+        'name' => 'required|string|max:255',
+        'email' => [
+            'required',
+            'email',
+            'regex:/^[\w\.\-]+@[a-zA-Z0-9\-]+\.[a-zA-Z]{2,6}$/', // Ensure email is unique
+        ],
+      
+        'image' => 'nullable|image|max:2048',
+        'password' => 'nullable|min:6'
+    ]);
 
-    // if ($validator->fails()) {
-    //     return redirect()->back()
-    //                 ->withErrors($validator) // Pass validation errors
-    //                 ->withInput();
-    // }
+    if ($validator->fails()) {
+        return redirect()->back()
+                    ->withErrors($validator) // Pass validation errors
+                    ->withInput();
+    }
 
 // Only reached if validation passes
-// $validatedData = $validator->validated();
-
+$validatedData = $validator->validated();
 
         $subAdmin = SubAdmin::findOrFail($id);
 

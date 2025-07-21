@@ -1,7 +1,7 @@
 @extends('admin.layout.app')
-@section('title', 'FAQs')
-@section('content')
+@section('title', "FAQ's")
 
+@section('content')
     <div class="main-content" style="min-height: 562px;">
         <section class="section">
             <div class="section-body">
@@ -35,38 +35,38 @@
                                         </tr>
                                     </thead>
                                     <tbody id="sortable-faqs">
-                                        @foreach ($faqs as $farmer)
-                                            <tr data-id="{{ $farmer->id }}">
+                                        @foreach ($faqs as $faq)
+                                            <tr data-id="{{ $faq->id }}">
                                                 <td class="sort-handler" style="cursor: move; text-align: center;">
                                                     <i class="fas fa-th"></i>
                                                 </td>
                                                 <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $farmer->questions }}</td>
-                                                <td>{{ \Illuminate\Support\Str::limit(strip_tags($farmer->description), 150, '...') }}
+                                                <td>{{ $faq->questions }}</td>
+                                                <td>{{ \Illuminate\Support\Str::limit(strip_tags($faq->description), 150, '...') }}
                                                 </td>
                                                 <td>
                                                     <div class="d-flex">
                                                         @if (Auth::guard('admin')->check() ||
                                                                 ($sideMenuPermissions->has('Faqs') && $sideMenuPermissions['Faqs']->contains('edit')))
-                                                            <a href="{{ route('faq.edit', $farmer->id) }}"
-                                                                class="btn btn-primary" style="margin-right: 10px">
-                                                                <span><i class="fa fa-edit"></i></span>
+                                                            <a href="{{ route('faq.edit', $faq->id) }}"
+                                                                class="btn btn-primary mr-2">
+                                                                <i class="fa fa-edit"></i>
                                                             </a>
                                                         @endif
 
                                                         @if (Auth::guard('admin')->check() ||
                                                                 ($sideMenuPermissions->has('Faqs') && $sideMenuPermissions['Faqs']->contains('delete')))
-                                                            <form id="delete-form-{{ $farmer->id }}"
-                                                                action="{{ route('faq.destroy', $farmer->id) }}"
+                                                            <form id="delete-form-{{ $faq->id }}"
+                                                                action="{{ route('faq.destroy', $faq->id) }}"
                                                                 method="POST">
                                                                 @csrf
                                                                 @method('DELETE')
                                                             </form>
 
-                                                            <button class="show_confirm btn d-flex gap-4"
-                                                                data-form="delete-form-{{ $farmer->id }}" type="button"
-                                                                style="background: #ff5608;">
-                                                                <span><i class="fa fa-trash"></i></span>
+                                                            <button class="show_confirm btn"
+                                                                data-form="delete-form-{{ $faq->id }}" type="button"
+                                                                style="background-color: #ff5608;">
+                                                                <i class="fa fa-trash"></i>
                                                             </button>
                                                         @endif
                                                     </div>
@@ -75,56 +75,29 @@
                                         @endforeach
                                     </tbody>
                                 </table>
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                            </div> <!-- card-body -->
+                        </div> <!-- card -->
+                    </div> <!-- col -->
+                </div> <!-- row -->
+            </div> <!-- section-body -->
         </section>
     </div>
-
-@endsection
-
-@section('css')
-    <!-- jQuery UI CSS -->
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
-    <!-- DataTables CSS -->
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
 @endsection
 
 @section('js')
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- jQuery UI -->
-    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
-    <!-- DataTables JS -->
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
-    <!-- SweetAlert -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <script>
+    <script type="text/javascript">
         $(document).ready(function() {
-            // Initialize DataTable
-            $('#table_id_events').DataTable({
-                paging: false,
-                info: false,
-                // Disable sorting for the first and last column
-                columnDefs: [{
-                    orderable: false,
-                    targets: [0, -1]
-                }]
-            });
+            $('#table_id_events').DataTable();
 
-            // SweetAlert Delete Confirmation
-            $('.show_confirm').on('click', function(e) {
+            // SweetAlert Delete
+            $('.show_confirm').click(function(e) {
                 e.preventDefault();
-                var formId = $(this).data('form');
-                var form = $('#' + formId);
+                const formId = $(this).data('form');
+                const form = $('#' + formId);
 
                 Swal.fire({
                     title: 'Are you sure?',
-                    text: "You won't be able to revert this!",
+                    text: "You won’t be able to revert this!",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
@@ -140,38 +113,30 @@
                                 _token: '{{ csrf_token() }}'
                             },
                             success: function(response) {
-                                Swal.fire(
-                                    'Deleted!',
-                                    'Your FAQ has been deleted.',
-                                    'success'
-                                ).then(() => {
-                                    location.reload();
-                                });
+                                Swal.fire('Deleted!', 'Your FAQ has been deleted.',
+                                        'success')
+                                    .then(() => location.reload());
                             },
                             error: function() {
-                                Swal.fire(
-                                    'Error!',
-                                    'Failed to delete FAQ.',
-                                    'error'
-                                );
+                                Swal.fire('Error!', 'Failed to delete FAQ.', 'error');
                             }
                         });
                     }
                 });
             });
 
-            // Toastr for reorder success
+            // Toastr notification
             @if (session('success'))
                 toastr.success('{{ session('success') }}');
             @endif
 
-            // Initialize sortable functionality
+            // Sortable
             $('#sortable-faqs').sortable({
                 handle: '.sort-handler',
                 axis: 'y',
                 placeholder: "ui-state-highlight",
                 update: function(event, ui) {
-                    var order = [];
+                    let order = [];
                     $('#sortable-faqs tr').each(function(index) {
                         order.push({
                             id: $(this).data('id'),
@@ -189,8 +154,6 @@
                         }),
                         success: function(response) {
                             toastr.success('Order updated successfully');
-                            // Optional: Refresh the page to update serial numbers
-                            // location.reload();
                         },
                         error: function(xhr) {
                             toastr.error('Error updating order');

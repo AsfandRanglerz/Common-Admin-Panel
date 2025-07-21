@@ -113,8 +113,8 @@
     @endif
 
     <script>
-        // Toggle password visibility
         $(document).ready(function() {
+            // Toggle password visibility
             $('.toggle-password').on('click', function() {
                 const $passwordInput = $('#password');
                 const $icon = $(this);
@@ -127,18 +127,14 @@
                     $icon.removeClass('fa-eye-slash').addClass('fa-eye');
                 }
             });
-        });
-        // Hide validation errors on focus
-        document.addEventListener('DOMContentLoaded', function() {
-            const inputs = document.querySelectorAll('input, select, textarea');
-            inputs.forEach(input => {
-                input.addEventListener('focus', function() {
-                    const feedback = this.parentElement.querySelector('.invalid-feedback');
-                    if (feedback) {
-                        feedback.style.display = 'none';
-                        this.classList.remove('is-invalid');
-                    }
-                });
+
+            // Hide validation errors on focus
+            $('input, select, textarea').on('focus', function() {
+                const $feedback = $(this).siblings('.invalid-feedback');
+                if ($feedback.length) {
+                    $feedback.hide();
+                    $(this).removeClass('is-invalid');
+                }
             });
         });
     </script>

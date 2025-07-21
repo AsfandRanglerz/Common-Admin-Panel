@@ -1,17 +1,17 @@
 @extends('admin.layout.app')
-@section('title', 'Edit About Us')
+@section('title', 'Edit Terms & Conditions')
 @section('content')
     <!-- Main Content -->
     <div class="main-content">
         <section class="section">
             <div class="section-body">
-                <form id="aboutUsForm" action="{{ url('admin/about-us-update') }}" method="POST">
+                <form id="termConditionForm" action="{{ url('admin/term-condition-update') }}" method="POST">
                     @csrf
                     <div class="row">
                         <div class="col-12 col-md-12 col-lg-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h4>Edit About Us</h4>
+                                    <h4>Edit Terms & Conditions</h4>
                                 </div>
                                 <div class="card-body">
                                     <div class="form-group">
@@ -34,33 +34,33 @@
 @endsection
 
 @section('js')
-    <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
+    <!-- CKEditor -->
     <script>
         CKEDITOR.replace('description');
 
         $(document).ready(function() {
-            $('#aboutUsForm').on('submit', function(e) {
-                // Sync CKEditor content
+            $('#termConditionForm').on('submit', function(e) {
+                // Update CKEditor content into textarea
                 for (instance in CKEDITOR.instances) {
                     CKEDITOR.instances[instance].updateElement();
                 }
 
                 const desc = CKEDITOR.instances.description.getData().trim();
 
-                // Remove old errors
+                // Clear previous errors
                 $('#description').removeClass('is-invalid');
                 $('#description-error').hide();
 
-                // Validation: check if blank or only tags
+                // Check if empty or only contains HTML tags/spaces
                 if (!desc || desc.replace(/&nbsp;|<[^>]*>/g, '').trim() === '') {
                     e.preventDefault();
                     $('#description').addClass('is-invalid');
                     $('#description-error').text('Description is required.').css('font-size', '14px')
-                .show();
+                        .show();
                 }
             });
 
-            // Optional: clear error when focused
+            // Optional: Clear error on click inside CKEditor
             CKEDITOR.instances.description.on('focus', function() {
                 $('#description').removeClass('is-invalid');
                 $('#description-error').hide();

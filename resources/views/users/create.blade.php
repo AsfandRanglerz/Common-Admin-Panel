@@ -95,8 +95,9 @@
     @endif
 
     <script>
-        // Password toggle
         $(document).ready(function() {
+
+            // 🔐 Password toggle
             $('.toggle-password').on('click', function() {
                 const $passwordInput = $('#password');
                 const $icon = $(this);
@@ -109,10 +110,8 @@
                     $icon.removeClass('fa-eye-slash').addClass('fa-eye');
                 }
             });
-        });
 
-        // Auto hide validation error when field is focused
-        $(document).ready(function() {
+            // ✅ Auto hide validation error on focus
             $('input, select, textarea').on('focus', function() {
                 const $feedback = $(this).parent().find('.invalid-feedback');
                 if ($feedback.length) {
@@ -120,6 +119,7 @@
                     $(this).removeClass('is-invalid');
                 }
             });
+
         });
     </script>
 @endsection

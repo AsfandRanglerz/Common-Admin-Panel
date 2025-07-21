@@ -114,79 +114,32 @@
 
 @endsection
 
+
 @section('js')
-    <!-- DataTables -->
     <script>
         $(document).ready(function() {
-            $('#table_id_events').DataTable({
-                paging: false,
-                info: false
-            });
-        });
-    </script>
-
-    <!-- SweetAlert -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
-
-    <script>
-        window.addEventListener('load', () => {
-            const message = localStorage.getItem('toastMessage');
-            if (message) {
-                toastr.success(message);
-                localStorage.removeItem('toastMessage');
+            // Initialize DataTable
+            if ($.fn.DataTable.isDataTable('#table_id_events')) {
+                $('#table_id_events').DataTable().destroy();
             }
-        });
-    </script>
+            $('#table_id_events').DataTable();
 
-    <!-- Toggle Status Script -->
-    <script>
-        $(document).ready(function() {
-            $('.toggle-status').change(function() {
-                let status = $(this).prop('checked') ? 1 : 0;
-                let blogId = $(this).data('id');
-                let $descriptionSpan = $(this).siblings('.custom-switch-description');
+            // SweetAlert2 delete confirmation
+            $('.show_confirm').click(function(event) {
+                event.preventDefault();
+                var formId = $(this).data("form");
+                var form = document.getElementById(formId);
 
-                $.ajax({
-                    url: "{{ route('blog.toggle-status') }}",
-                    type: 'POST',
-                    data: {
-                        _token: '{{ csrf_token() }}',
-                        id: blogId,
-                        status: status
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            $descriptionSpan.text(response.new_status);
-                            toastr.success(response.message);
-                        } else {
-                            toastr.error(response.message);
-                        }
-                    },
-                    error: function(xhr) {
-                        toastr.error('Error updating status');
-                    }
-                });
-            });
-        });
-    </script>
-
-    <!-- Delete Confirmation Script -->
-    <script type="text/javascript">
-        $(document).on('click', '.show_confirm', function(event) {
-            var formId = $(this).data("form");
-            var form = document.getElementById(formId);
-            event.preventDefault();
-
-            swal({
+                Swal.fire({
                     title: "Are you sure you want to delete this record?",
-                    text: "If you delete this Sub Admin record, it will be gone forever.",
+                    text: "If you delete this User record, it will be gone forever.",
                     icon: "warning",
-                    buttons: true,
-                    dangerMode: true,
-                })
-                .then((willDelete) => {
-                    if (willDelete) {
-                        // Send AJAX request to delete
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
                         $.ajax({
                             url: form.action,
                             type: 'POST',
@@ -195,57 +148,130 @@
                                 _token: '{{ csrf_token() }}'
                             },
                             success: function(response) {
-                                swal({
+                                Swal.fire({
                                     title: "Success!",
-                                    text: "Record deleted successfully",
+                                    text: "Record deleted successfully.",
                                     icon: "success",
-                                    button: false,
-                                    timer: 3000
-
+                                    timer: 2000,
+                                    showConfirmButton: false
                                 }).then(() => {
                                     location.reload();
                                 });
                             },
-                            error: function(xhr) {
-                                swal("Error!", "Failed to delete record.", "error");
+                            error: function() {
+                                Swal.fire("Error!", "Failed to delete record.",
+                                    "error");
                             }
                         });
                     }
                 });
-        });
-    </script>
+            });
 
-    <!-- SortableJS -->
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-    <script>
-        new Sortable(document.getElementById('sortable-faqs'), {
-            animation: 150,
-            handle: '.sort-handler',
-            onEnd: function() {
-                let order = [];
-                document.querySelectorAll('#sortable-faqs tr').forEach((row, index) => {
-                    order.push({
-                        id: row.getAttribute('data-id'),
-                        position: index + 1
-                    });
+            // Toggle status
+            let currentToggle = null;
+            let currentUserId = null;
+
+            $('.toggle-status').change(function() {
+                let status = $(this).is(':checked') ? 1 : 0;
+                currentToggle = $(this);
+                currentUserId = $(this).data('id');
+
+                if (status === 0) {
+                    $('#deactivatingUserId').val(currentUserId);
+                    $('#deactivationModal').modal('show');
+                } else {
+                    updateUserStatus(currentUserId, 1);
+                }
+            });
+
+            $('#confirmDeactivation').click(function() {
+                let reason = $('#deactivationReason').val();
+                if (reason.trim() === '') {
+                    toastr.error('Please provide a deactivation reason');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 800);
+                    return;
+                }
+
+                $('#deactivationModal').modal('hide');
+                $('#deactivationReason').val('');
+                updateUserStatus(currentUserId, 0, reason);
+            });
+
+            $('#deactivationModal').on('hidden.bs.modal', function() {
+                if ($('#deactivationReason').val().trim() === '') {
+                    setTimeout(() => {
+                        location.reload();
+                    }, 500);
+                }
+            });
+
+            function updateUserStatus(userId, status, reason = null) {
+                let $descriptionSpan = currentToggle.siblings('.custom-switch-description');
+                $.ajax({
+                    url: "{{ route('user.toggle-status') }}",
+                    type: "POST",
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        id: userId,
+                        status: status,
+                        reason: reason
+                    },
+                    success: function(res) {
+                        if (res.success) {
+                            $descriptionSpan.text(res.new_status);
+                            toastr.success(res.message);
+                            setTimeout(() => {
+                                location.reload();
+                            }, 1000);
+                        } else {
+                            currentToggle.prop('checked', !status);
+                            toastr.error(res.message);
+                        }
+                    },
+                    error: function() {
+                        currentToggle.prop('checked', !status);
+                        toastr.error('Error updating status');
+                    }
                 });
+            }
 
-                fetch("{{ route('blog.reorder') }}", {
+            // Drag and Drop Reordering (jQuery version using Sortable + AJAX)
+            var sortable = new Sortable(document.getElementById('sortable-faqs'), {
+                animation: 150,
+                handle: '.sort-handler',
+                onEnd: function() {
+                    var order = [];
+
+                    $('#sortable-faqs tr').each(function(index) {
+                        order.push({
+                            id: $(this).data('id'),
+                            position: index + 1
+                        });
+                    });
+
+                    $.ajax({
+                        url: "{{ route('blog.reorder') }}",
                         method: 'POST',
                         headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
                         },
-                        body: JSON.stringify({
+                        contentType: 'application/json',
+                        data: JSON.stringify({
                             order: order
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        localStorage.setItem('toastMessage', 'Alignment has been updated successfully');
-                        window.location.reload();
+                        }),
+                        success: function() {
+                            localStorage.setItem('toastMessage',
+                                'Alignment has been updated successfully');
+                            window.location.reload();
+                        },
+                        error: function() {
+                            toastr.error('Failed to reorder blogs.');
+                        }
                     });
-            }
+                }
+            });
         });
     </script>
 @endsection

@@ -75,7 +75,7 @@ class FaqController extends Controller
             'questions' => $request->questions,
             'description' => $request->description,
         ]);
-        return redirect('/admin/faq-index')->with('success', 'FAQ created successfully');
+        return redirect('/admin/faq')->with('success', 'FAQ created successfully');
     }
 
 
@@ -107,7 +107,7 @@ class FaqController extends Controller
         } else {
             $data->update($request->all());
         }
-        return redirect('/admin/faq-index')->with('success', 'FAQs updated successfully');
+        return redirect('/admin/faq')->with('success', 'FAQs updated successfully');
     }
     
 

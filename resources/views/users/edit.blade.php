@@ -57,35 +57,33 @@
                                         </div>
                                     </div>
 
-                                    <!-- Password Field (optional) -->
+                                    <!-- Password Field (fixed) -->
                                     <div class="col-sm-6 pl-sm-0 pr-sm-3">
                                         <div class="form-group position-relative">
                                             <label for="password">Password (Optional)</label>
                                             <input type="password"
                                                 class="form-control @error('password') is-invalid @enderror" id="password"
                                                 name="password" placeholder="Password">
-                                            <span class="fa fa-eye position-absolute"
-                                                style="top: 42px; right: 15px; cursor: pointer;"
-                                                onclick="togglePassword()"></span>
+                                            <span class="fa fa-eye toggle-password position-absolute"
+                                                style="top: 42px; right: 15px; cursor: pointer;"></span>
                                             @error('password')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                         </div>
                                     </div>
 
-                                </div>
 
-                                <!-- Submit Button -->
-                                <div class="card-footer text-center row">
-                                    <div class="col-12">
-                                        <button type="submit" class="btn btn-primary mr-1 btn-bg" id="submit">Save
-                                            Changes</button>
+                                    <!-- Submit Button -->
+                                    <div class="card-footer text-center row">
+                                        <div class="col-12">
+                                            <button type="submit" class="btn btn-primary mr-1 btn-bg" id="submit">Save
+                                                Changes</button>
+                                        </div>
                                     </div>
-                                </div>
 
+                                </div>
                             </div>
                         </div>
-                    </div>
                 </form>
             </div>
         </section>
@@ -101,31 +99,28 @@
     @endif
 
     <script>
-        function togglePassword() {
-            const passwordInput = document.getElementById('password');
-            const icon = event.target;
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-            } else {
-                passwordInput.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-            }
-        }
+        $(document).ready(function() {
+            // Toggle password visibility
+            $('.toggle-password').on('click', function() {
+                const $passwordInput = $('#password');
+                const $icon = $(this);
 
-        // Hide validation error on input focus
-        document.addEventListener('DOMContentLoaded', function() {
-            const inputs = document.querySelectorAll('input');
-            inputs.forEach(input => {
-                input.addEventListener('focus', function() {
-                    const errorDiv = this.parentElement.querySelector('.invalid-feedback');
-                    if (errorDiv) {
-                        errorDiv.style.display = 'none';
-                        this.classList.remove('is-invalid');
-                    }
-                });
+                if ($passwordInput.attr('type') === 'password') {
+                    $passwordInput.attr('type', 'text');
+                    $icon.removeClass('fa-eye').addClass('fa-eye-slash');
+                } else {
+                    $passwordInput.attr('type', 'password');
+                    $icon.removeClass('fa-eye-slash').addClass('fa-eye');
+                }
+            });
+
+            // Hide validation errors on focus
+            $('input, select, textarea').on('focus', function() {
+                const $feedback = $(this).parent().find('.invalid-feedback');
+                if ($feedback.length) {
+                    $feedback.hide();
+                    $(this).removeClass('is-invalid');
+                }
             });
         });
     </script>

@@ -94,13 +94,13 @@ Route::prefix('admin')->middleware(['admin', 'check.subadmin.status'])->group(fu
     Route::get('logout', [AdminController::class, 'logout']);
 
         // ############ Faq #################
-    Route::get('faq-index', [FaqController::class, 'Faq'])->middleware('check.permission:Faqs,view');
+    Route::get('faq', [FaqController::class, 'Faq'])->middleware('check.permission:Faqs,view');
     Route::get('faq-edit/{id}', [FaqController::class, 'FaqsEdit'])->name('faq.edit') ->middleware('check.permission:Faqs,edit');
     Route::post('faq-update/{id}', [FaqController::class, 'FaqsUpdate'])->middleware('check.permission:Faqs,edit');
     Route::get('faq-view', [FaqController::class, 'FaqView']) ->middleware('check.permission:Faqs,view');
     Route::get('faq-create', [FaqController::class, 'Faqscreateview']) ->middleware('check.permission:Faqs,create');
     Route::post('faq-store', [FaqController::class, 'Faqsstore']) ->middleware('check.permission:Faqs,create');
-    Route::delete('faq-destroy/{id}', [FaqController::class, 'faqdelete'])->name('faq.destroy') ->middleware('check.permission:Faqs,delete');
+      Route::delete('faq-destroy/{id}', [FaqController::class, 'faqdelete'])->name('faq.destroy');
     Route::post('/faqs/reorder', [FaqController::class, 'reorder'])->name('faq.reorder');
 
     // ############ Users #################

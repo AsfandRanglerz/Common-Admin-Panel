@@ -32,7 +32,7 @@
                                         <div class="form-group">
                                             <label for="slug">Slug <span style="color: red;">*</span></label>
                                             <input type="text" class="form-control" id="slug" name="slug"
-                                                value="{{ $data->slug }}" placeholder="Slug" required>
+                                                value="{{ $data->slug }}" placeholder="Slug" readonly>
                                         </div>
                                     </div>
 
@@ -82,29 +82,59 @@
 @endsection
 
 @section('js')
-    {{-- CKEditor --}}
-    <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
-    <script>
-        CKEDITOR.replace('content');
-    </script>
+@section('js')
+    {{-- Include CKEditor --}}
 
-    {{-- Slug Generator --}}
-    <script>
-        function slugify(text) {
-            return text
-                .toString()
-                .toLowerCase()
-                .trim()
-                .replace(/\s+/g, '-') // Replace spaces with -
-                .replace(/[^\w\-]+/g, '') // Remove non-word chars
-                .replace(/\-\-+/g, '-') // Replace multiple - with single -
-                .replace(/^-+/, '') // Trim - from start
-                .replace(/-+$/, ''); // Trim - from end
-        }
+    {{-- Include jQuery if not already --}}
 
-        document.getElementById('title').addEventListener('input', function() {
-            const title = this.value;
-            document.getElementById('slug').value = slugify(title);
+    <script>
+        $(document).ready(function() {
+
+            // ✅ 1. Initialize CKEditor
+            CKEDITOR.replace('content');
+
+            // ✅ 2. Error hide on CKEditor focus
+            CKEDITOR.instances['content'].on('focus', function() {
+                $('#content-error').hide();
+            });
+
+            // ✅ 3. Slug generation from title
+            function slugify(text) {
+                return text.toString().toLowerCase().trim()
+                    .replace(/\s+/g, '-') // Replace spaces with -
+                    .replace(/[^\w\-]+/g, '') // Remove all non-word chars
+                    .replace(/\-\-+/g, '-') // Replace multiple - with single -
+                    .replace(/^-+/, '') // Trim - from start
+                    .replace(/-+$/, ''); // Trim - from end
+            }
+
+            $('#title').on('input', function() {
+                $('#slug').val(slugify($(this).val()));
+            });
+
+            // ✅ 4. Add error placeholder after textarea
+            if ($('#content-error').length === 0) {
+                $('<div id="content-error" class="text-danger mt-2" style="display:none;"></div>').insertAfter(
+                    '#content');
+            }
+
+            // ✅ 5. On submit validation
+            $('#edit_blog').on('submit', function(e) {
+                let content = CKEDITOR.instances['content'].getData().trim();
+                let plainText = $('<div>').html(content).text().trim();
+                let onlySymbolsOrEmpty = plainText === '' || /^[\s\W_]+$/.test(plainText);
+
+                if (onlySymbolsOrEmpty) {
+                    e.preventDefault();
+
+                    $('#content-error')
+                        .text('The description field is required.')
+                        .show();
+
+                    CKEDITOR.instances['content'].focus();
+                    return false;
+                }
+            });
         });
     </script>
 @endsection

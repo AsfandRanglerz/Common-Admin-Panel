@@ -18,7 +18,8 @@
                                     <div class="form-group">
                                         <label>Question <span style="color: red;">*</span></label>
                                         <input name="questions"
-                                            class="form-control @error('questions') is-invalid @enderror" required>
+                                            class="form-control @error('questions') is-invalid @enderror" required
+                                            placeholder="Enter question">
                                         @error('questions')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
