@@ -171,75 +171,37 @@
             });
 
             // Toggle status
-            let currentToggle = null;
-            let currentUserId = null;
+            $(document).ready(function() {
+                $('.toggle-status').change(function() {
+                    const toggleSwitch = $(this);
+                    const status = toggleSwitch.is(':checked') ? 1 : 0;
+                    const blogId = toggleSwitch.data('id');
+                    const $statusText = toggleSwitch.siblings('.custom-switch-description');
 
-            $('.toggle-status').change(function() {
-                let status = $(this).is(':checked') ? 1 : 0;
-                currentToggle = $(this);
-                currentUserId = $(this).data('id');
-
-                if (status === 0) {
-                    $('#deactivatingUserId').val(currentUserId);
-                    $('#deactivationModal').modal('show');
-                } else {
-                    updateUserStatus(currentUserId, 1);
-                }
-            });
-
-            $('#confirmDeactivation').click(function() {
-                let reason = $('#deactivationReason').val();
-                if (reason.trim() === '') {
-                    toastr.error('Please provide a deactivation reason');
-                    setTimeout(() => {
-                        location.reload();
-                    }, 800);
-                    return;
-                }
-
-                $('#deactivationModal').modal('hide');
-                $('#deactivationReason').val('');
-                updateUserStatus(currentUserId, 0, reason);
-            });
-
-            $('#deactivationModal').on('hidden.bs.modal', function() {
-                if ($('#deactivationReason').val().trim() === '') {
-                    setTimeout(() => {
-                        location.reload();
-                    }, 500);
-                }
-            });
-
-            function updateUserStatus(userId, status, reason = null) {
-                let $descriptionSpan = currentToggle.siblings('.custom-switch-description');
-                $.ajax({
-                    url: "{{ route('blog.toggle-status') }}",
-                    type: "POST",
-                    data: {
-                        _token: '{{ csrf_token() }}',
-                        id: userId,
-                        status: status,
-                        reason: reason
-                    },
-                    success: function(res) {
-                        if (res.success) {
-                            $descriptionSpan.text(res.new_status);
-                            toastr.success(res.message);
-                            setTimeout(() => {
-                                location.reload();
-                            }, 1000);
-                        } else {
-                            currentToggle.prop('checked', !status);
-                            toastr.error(res.message);
+                    $.ajax({
+                        url: "{{ route('blog.toggle-status') }}",
+                        type: "POST",
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            id: blogId,
+                            status: status
+                        },
+                        success: function(res) {
+                            if (res.success) {
+                                $statusText.text(res.new_status);
+                                toastr.success(res.message);
+                            } else {
+                                toggleSwitch.prop('checked', !status); // Undo toggle
+                                toastr.error(res.message);
+                            }
+                        },
+                        error: function() {
+                            toggleSwitch.prop('checked', !status); // Undo toggle
+                            toastr.error('Something went wrong!');
                         }
-                    },
-                    error: function() {
-                        currentToggle.prop('checked', !status);
-                        toastr.error('Error updating status');
-                    }
+                    });
                 });
-            }
-
+            });
             // Drag and Drop Reordering (jQuery version using Sortable + AJAX)
             var sortable = new Sortable(document.getElementById('sortable-faqs'), {
                 animation: 150,
@@ -265,9 +227,8 @@
                             order: order
                         }),
                         success: function() {
-                            localStorage.setItem('toastMessage',
-                                'Alignment has been updated successfully');
-                            window.location.reload();
+                            // window.location.reload();
+                            toastr.success('Alignment has been updated successfully');
                         },
                         error: function() {
                             toastr.error('Failed to reorder blogs.');
