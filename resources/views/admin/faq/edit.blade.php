@@ -58,7 +58,6 @@
 @section('js')
     <script>
         $(document).ready(function() {
-
             // Init CKEditor
             CKEDITOR.replace('description');
 

@@ -152,7 +152,7 @@ class AdminController extends Controller
     {
 
         $request->validate([
-            'password' => 'required|min:8',
+            'password' => 'required|min:8|unique:admins,password|unique:sub_admins,password',
             'confirmPassword' => 'required',
 
         ]);

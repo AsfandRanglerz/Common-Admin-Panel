@@ -40,7 +40,7 @@
                             <form id="seo-form-{{ $page->id }}" action="{{ route('seo.update', $page->id) }}"
                                 method="POST">
                                 @csrf
-                                @method('PUT')
+                                @method('POST')
                                 <div class="mb-3">
                                     <label class="form-label">Title <span style="color: red;">*</span></label>
                                     <input type="text" name="title" value="{{ old('title', $page->title) }}"

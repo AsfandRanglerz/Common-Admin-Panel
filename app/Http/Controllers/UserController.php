@@ -113,6 +113,8 @@ protected function sendDeactivationEmail($user, $reason)
             'phone' => $request->phone,
             'password' => bcrypt($request->password),
         ]);
+
+
     
         return redirect()->route('user.index')->with('success', 'User created successfully');
     }

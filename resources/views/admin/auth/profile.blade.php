@@ -106,7 +106,7 @@
 
                                             @csrf
 
-                                           
+
 
                                             {{--                                        @if (\Illuminate\Support\Facades\Session::has('errors')) --}}
 
@@ -240,7 +240,4 @@
         </section>
 
     </div>
-
-
-
 @endsection

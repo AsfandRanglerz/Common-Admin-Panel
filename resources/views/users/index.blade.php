@@ -39,7 +39,9 @@
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $user->name }}</td>
-                                                <td>{{ $user->email }}</td>
+                                                <td>
+                                                    <a href="mailto:{{ $user->email }}">{{ $user->email }}</a>
+                                                </td>
                                                 <td>{{ $user->phone }}</td>
                                                 <td>
                                                     <label class="custom-switch">
@@ -165,7 +167,7 @@
                             },
                             error: function() {
                                 Swal.fire("Error!", "Failed to delete record.",
-                                "error");
+                                    "error");
                             }
                         });
                     }

@@ -15,7 +15,8 @@
                                 @csrf
                                 <div class="form-group">
                                     <label for="email">Email</label>
-                                    <input id="email" type="email" class="form-control" name="email" tabindex="1">
+                                    <input id="email" type="email" class="form-control" name="email" tabindex="1"
+                                        placeholder="example@gmail.com">
                                     @error('email')
                                         <span class="text-danger">{{ $errors->first('email') }}</span>
                                     @enderror

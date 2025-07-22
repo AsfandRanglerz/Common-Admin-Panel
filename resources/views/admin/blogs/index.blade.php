@@ -56,7 +56,8 @@
                                                     @endif
                                                 </td>
 
-                                                <td>{{ \Illuminate\Support\Str::limit(strip_tags($blog->content), 150, '...') }}
+                                                <td title="{{ strip_tags(html_entity_decode($blog->content)) }}">
+                                                    {{ \Illuminate\Support\Str::limit(strip_tags($blog->content), 150, '...') }}
                                                 </td>
 
                                                 <td>
@@ -171,37 +172,36 @@
             });
 
             // Toggle status
-            $(document).ready(function() {
-                $('.toggle-status').change(function() {
-                    const toggleSwitch = $(this);
-                    const status = toggleSwitch.is(':checked') ? 1 : 0;
-                    const blogId = toggleSwitch.data('id');
-                    const $statusText = toggleSwitch.siblings('.custom-switch-description');
+            $('.toggle-status').change(function() {
+                const toggleSwitch = $(this);
+                const status = toggleSwitch.is(':checked') ? 1 : 0;
+                const blogId = toggleSwitch.data('id');
+                const $statusText = toggleSwitch.siblings('.custom-switch-description');
 
-                    $.ajax({
-                        url: "{{ route('blog.toggle-status') }}",
-                        type: "POST",
-                        data: {
-                            _token: '{{ csrf_token() }}',
-                            id: blogId,
-                            status: status
-                        },
-                        success: function(res) {
-                            if (res.success) {
-                                $statusText.text(res.new_status);
-                                toastr.success(res.message);
-                            } else {
-                                toggleSwitch.prop('checked', !status); // Undo toggle
-                                toastr.error(res.message);
-                            }
-                        },
-                        error: function() {
+                $.ajax({
+                    url: "{{ route('blog.toggle-status') }}",
+                    type: "POST",
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        id: blogId,
+                        status: status
+                    },
+                    success: function(res) {
+                        if (res.success) {
+                            $statusText.text(res.new_status);
+                            toastr.success(res.message);
+                        } else {
                             toggleSwitch.prop('checked', !status); // Undo toggle
-                            toastr.error('Something went wrong!');
+                            toastr.error(res.message);
                         }
-                    });
+                    },
+                    error: function() {
+                        toggleSwitch.prop('checked', !status); // Undo toggle
+                        toastr.error('Something went wrong!');
+                    }
                 });
             });
+
             // Drag and Drop Reordering (jQuery version using Sortable + AJAX)
             var sortable = new Sortable(document.getElementById('sortable-faqs'), {
                 animation: 150,
@@ -228,7 +228,10 @@
                         }),
                         success: function() {
                             // window.location.reload();
-                            toastr.success('Alignment has been updated successfully');
+                            toastr.success(
+                                'Alignment has been updated successfully');
+                            window.location.reload();
+
                         },
                         error: function() {
                             toastr.error('Failed to reorder blogs.');

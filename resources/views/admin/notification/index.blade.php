@@ -49,7 +49,9 @@
                                                         width="60" height="60">
                                                 </td>
                                                 <td>{{ $notification->title }}</td>
-                                                <td>{{ \Illuminate\Support\Str::limit(strip_tags($notification->description), 150, '...') }}
+                                                <td
+                                                    title="{{ strip_tags(html_entity_decode($notification->description)) }}">
+                                                    {{ \Illuminate\Support\Str::limit(strip_tags($notification->description), 150, '...') }}
                                                 </td>
                                                 <td>{{ $notification->created_at->format('d M Y') }}</td>
                                                 <td>

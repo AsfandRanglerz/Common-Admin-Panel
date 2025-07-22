@@ -7,27 +7,24 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title')</title>
 
-    <!-- ========== External CSS Libraries ========== -->
+    <!-- ========== Favicon ========== -->
+    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('public/admin/assets/img/favicon2.png') }}" />
+
+    <!-- ========== External CSS Libraries (CDN) ========== -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
-    {{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"> --}}
 
-    <!-- Favicon -->
-    <link rel='shortcut icon' type='image/x-icon' href='{{ asset('public/admin/assets/img/favicon2.png') }}'  />
-
-    <!-- ========== Project CSS Files ========== -->
+    <!-- ========== Vendor CSS (Public Assets) ========== -->
     <link rel="stylesheet" href="{{ asset('public/admin/assets/css/app.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('public/admin/assets/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('public/admin/assets/css/components.css') }}">
-    <link rel="stylesheet" href="{{ asset('public/admin/assets/css/custom.css') }}">
-    <link rel="stylesheet" href="{{ asset('public/admin/assets/toastr/toastr.css') }}">
-
-    <!-- ========== DataTables CSS ========== -->
     <link rel="stylesheet" href="{{ asset('public/admin/assets/bundles/datatables/datatables.min.css') }}">
     <link rel="stylesheet"
         href="{{ asset('public/admin/assets/bundles/datatables/DataTables-1.10.16/css/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('public/admin/assets/toastr/toastr.css') }}">
 
-
+    <!-- ========== Custom Project CSS ========== -->
+    <link rel="stylesheet" href="{{ asset('public/admin/assets/css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('public/admin/assets/css/custom.css') }}">
 
     @yield('style')
 </head>
@@ -41,31 +38,31 @@
         </div>
     </div>
 
-    <!-- ========== Core JS Libraries ========== -->
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <!-- ========== External JS Libraries (CDN) ========== -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script src="https://cdn.ckeditor.com/4.21.0/standard/ckeditor.js"></script>
 
-    <!-- ========== Project JS Files ========== -->
+
+
+    <!-- ========== Vendor JS (Public Assets) ========== -->
     <script src="{{ asset('public/admin/assets/js/app.min.js') }}"></script>
     <script src="{{ asset('public/admin/assets/js/scripts.js') }}"></script>
-    <script src="{{ asset('public/admin/assets/js/custom.js') }}"></script>
-    <script src="{{ asset('public/admin/assets/toastr/toastr.js') }}"></script>
-
-    <!-- ========== DataTables JS ========== -->
     <script src="{{ asset('public/admin/assets/bundles/datatables/datatables.min.js') }}"></script>
     <script src="{{ asset('public/admin/assets/bundles/datatables/DataTables-1.10.16/js/dataTables.bootstrap4.min.js') }}">
     </script>
     <script src="{{ asset('public/admin/assets/js/page/datatables.js') }}"></script>
-
-    <!-- ========== Charts ========== -->
     <script src="{{ asset('public/admin/assets/bundles/apexcharts/apexcharts.min.js') }}"></script>
+    <script src="{{ asset('public/admin/assets/toastr/toastr.js') }}"></script>
 
-    <!-- ========== Toastr Configuration ========== -->
+    <!-- ========== Toastr Flash Messages ========== -->
     <script>
         toastr.options = {
             "closeButton": false,
@@ -88,18 +85,26 @@
         @if (Session::has('success'))
             toastr.success("{{ Session::get('success') }}");
         @endif
+
         @if (Session::has('error'))
             toastr.error("{{ Session::get('error') }}");
         @endif
+
         @if (Session::has('info'))
             toastr.info("{{ Session::get('info') }}");
         @endif
+
         @if (Session::has('warning'))
             toastr.warning("{{ Session::get('warning') }}");
         @endif
     </script>
 
+    <!-- ========== Custom Project JS ========== -->
+    <script src="{{ asset('public/admin/assets/js/custom.js') }}"></script>
+
+    <!-- ========== Blade Page-Specific JS ========== -->
     @yield('js')
+
 </body>
 
 </html>

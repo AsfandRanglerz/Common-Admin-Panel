@@ -42,7 +42,8 @@
                                                 </td>
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $faq->questions }}</td>
-                                                <td>{{ \Illuminate\Support\Str::limit(strip_tags($faq->description), 150, '...') }}
+                                                <td title="{{ strip_tags(html_entity_decode($faq->description)) }}">
+                                                    {{ \Illuminate\Support\Str::limit(strip_tags($faq->description), 150, '...') }}
                                                 </td>
                                                 <td>
                                                     <div class="d-flex">
@@ -152,7 +153,7 @@
                     });
 
                     $.ajax({
-                        url: "{{ route('blog.reorder') }}",
+                        url: "{{ route('faq.reorder') }}",
                         method: 'POST',
                         headers: {
                             'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -162,11 +163,11 @@
                             order: order
                         }),
                         success: function() {
-                            // window.location.reload();
-                            toastr.success('Alignment has been updated successfully');
+                            toastr.success('Order updated successfully!');
+                            window.location.reload();
                         },
                         error: function() {
-                            toastr.error('Failed to reorder blogs.');
+                            toastr.error('Reordering failed!');
                         }
                     });
                 }

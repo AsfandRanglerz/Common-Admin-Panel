@@ -32,7 +32,7 @@
                                         <tr>
                                             <td>1</td>
 
-                                            <td>
+                                            <td title="{{ strip_tags(html_entity_decode($data->description)) }}">
                                                 @if ($data && $data->description)
                                                     {!! Str::limit(strip_tags($data->description), 200, '...') !!}
                                                 @else
