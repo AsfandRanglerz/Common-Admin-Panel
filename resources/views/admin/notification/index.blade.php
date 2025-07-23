@@ -14,7 +14,7 @@
                             <div class="card-body table-striped table-bordered table-responsive">
                                 @if (Auth::guard('admin')->check() ||
                                         ($sideMenuPermissions->has('Notifications') && $sideMenuPermissions['Notifications']->contains('create')))
-                                    <a class="btn mb-3 text-white" data-bs-toggle="modal" style="background-color: #ff5608;"
+                                    <a class="btn mb-3 text-white" data-bs-toggle="modal" style="background-color: #cb84fe;"
                                         data-bs-target="#createUserModal">Create</a>
                                 @endif
 
@@ -49,9 +49,7 @@
                                                         width="60" height="60">
                                                 </td>
                                                 <td>{{ $notification->title }}</td>
-                                                <td
-                                                    title="{{ strip_tags(html_entity_decode($notification->description)) }}">
-                                                    {{ \Illuminate\Support\Str::limit(strip_tags($notification->description), 150, '...') }}
+                                                <td>{{ \Illuminate\Support\Str::limit(strip_tags($notification->description), 150, '...') }}
                                                 </td>
                                                 <td>{{ $notification->created_at->format('d M Y') }}</td>
                                                 <td>
@@ -59,16 +57,18 @@
                                                             ($sideMenuPermissions->has('Notifications') && $sideMenuPermissions['Notifications']->contains('delete')))
                                                         <form id="delete-form-{{ $notification->id }}"
                                                             action="{{ route('notification.destroy', $notification->id) }}"
-                                                            method="POST" style="display:inline-block; margin-left: 10px">
+                                                            method="POST">
                                                             @csrf
                                                             @method('DELETE')
-                                                            <button class="show_confirm btn"
-                                                                data-form="delete-form-{{ $notification->id }}"
-                                                                style="background-color: #ff5608;" type="submit">
-                                                                <i class="fa fa-trash"></i>
-                                                            </button>
                                                         </form>
+
+                                                        <button class="show_confirm btn" style="background-color: #cb84fe;"
+                                                            data-form="delete-form-{{ $notification->id }}" type="button">
+                                                            <span><i class="fa fa-trash"></i></span>
+                                                        </button>
                                                     @endif
+
+
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -100,7 +100,7 @@
 
                         <div class="form-group" id="user_field">
                             <label><strong>Sellers <span style="color: red;">*</span></strong></label>
-                            <div class="form-check mb-2">
+                            <div class="form-check mb-2" style="line-height: 1.9;padding-left: 1.5em">
                                 <input type="checkbox" id="select_all_users" class="form-check-input">
                                 <label class="form-check-label" for="select_all_users">Select All</label>
                             </div>
@@ -166,7 +166,7 @@
 
             // Re-initialize Select2 when modal opens (fix for hidden content)
             $('#createUserModal').on('shown.bs.modal', function() {
-                $('#users.select2').select2({
+                $('.select2').select2({
                     dropdownParent: $('#createUserModal'),
                     placeholder: "Select sellers",
                     allowClear: true
@@ -188,54 +188,65 @@
                 $("#createBtn").prop("disabled", true);
             });
 
-            $('.show_confirm').click(function(event) {
-                event.preventDefault();
+            // Confirm delete action
+
+            $(document).on('click', '.show_confirm', function(event) {
                 var formId = $(this).data("form");
                 var form = document.getElementById(formId);
-
-                swal({
-                    title: "Are you sure you want to delete this record?",
-                    text: "This action cannot be undone.",
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true
-                }).then((willDelete) => {
-                    if (willDelete) {
+                event.preventDefault();
+                Swal.fire({
+                    title: 'Are you sure you want to delete this record?',
+                    text: "If you delete this Notification record, it will be gone forever.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
                         $.ajax({
                             url: form.action,
-                            type: 'POST',
+                            method: 'POST',
                             data: {
                                 _method: 'DELETE',
                                 _token: '{{ csrf_token() }}'
                             },
-                            success: function(response) {
-                                swal("Deleted!", "Record has been deleted.", "success")
-                                    .then(() => {
-                                        location.reload();
-                                    });
+                            success: function(res) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success!',
+                                    text: 'Recored deleted successfully.',
+                                    showConfirmButton: false,
+                                    timer: 2000
+                                }).then(() => location.reload());
                             },
                             error: function() {
-                                swal("Error!", "Failed to delete record.", "error");
+                                Swal.fire('Error!', 'Failed to delete the record.',
+                                    'error');
                             }
                         });
                     }
                 });
-            });
+                $('.delete_all').click(function(event) {
+                    event.preventDefault();
 
-            $('.delete_all').click(function(event) {
-                var form = $(this).closest("form");
-                event.preventDefault();
-                swal({
-                    title: "Are you sure you want to delete all records?",
-                    text: "This will permanently remove all records and cannot be undone.",
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true
-                }).then((willDelete) => {
-                    if (willDelete) {
-                        form.submit();
-                    }
+                    var form = $(this).closest("form");
+
+                    Swal.fire({
+                        title: 'Are you sure you want to delete all records?',
+                        text: "This will permanently remove all records and cannot be undone.",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, delete all!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
                 });
+
             });
         });
     </script>

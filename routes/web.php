@@ -154,8 +154,7 @@ Route::post('/users/toggle-status', [UserController::class, 'toggleStatus'])->na
 Route::post('/blogs/reorder', [BlogController::class, 'reorder'])->name('blog.reorder');
 
 
-
-    // ############ Notifications #################
+ // ############ Notifications #################
 
     Route::controller(NotificationController::class)->group(function () {
 
@@ -167,12 +166,7 @@ Route::post('/blogs/reorder', [BlogController::class, 'reorder'])->name('blog.re
         Route::delete('/notifications/delete-all', 'deleteAll')->name('notifications.deleteAll');
         Route::get('/get-users-by-type', 'getUsersByType');
 
-
-
-    
-
     });
-
 
     // ############ Seo Routes #################
 

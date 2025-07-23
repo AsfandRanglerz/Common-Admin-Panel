@@ -41,30 +41,32 @@
         </div>
     </div>
 
-    <!-- ========== External JS Libraries (CDN) ========== -->
+    <!-- ========== Core JS Libraries ========== -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-    <script src="https://cdn.ckeditor.com/4.21.0/standard/ckeditor.js"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-
-
-    <!-- ========== Vendor JS (Public Assets) ========== -->
+    <!-- ========== Project JS Files ========== -->
     <script src="{{ asset('public/admin/assets/js/app.min.js') }}"></script>
     <script src="{{ asset('public/admin/assets/js/scripts.js') }}"></script>
+    <script src="{{ asset('public/admin/assets/toastr/toastr.js') }}"></script>
+
+    <!-- ========== DataTables ========== -->
     <script src="{{ asset('public/admin/assets/bundles/datatables/datatables.min.js') }}"></script>
     <script src="{{ asset('public/admin/assets/bundles/datatables/DataTables-1.10.16/js/dataTables.bootstrap4.min.js') }}">
     </script>
     <script src="{{ asset('public/admin/assets/js/page/datatables.js') }}"></script>
+
+    <!-- ========== Charts ========== -->
     <script src="{{ asset('public/admin/assets/bundles/apexcharts/apexcharts.min.js') }}"></script>
-    <script src="{{ asset('public/admin/assets/toastr/toastr.js') }}"></script>
+
+    <!-- ========== External JS Plugins ========== -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script src="https://cdn.ckeditor.com/4.21.0/standard/ckeditor.js"></script>
 
     <!-- ========== Toastr Flash Messages ========== -->
     <script>
