@@ -190,9 +190,7 @@ public function store(Request $request)
 
         $notification->delete();
 
-        return redirect()->route('notification.index')->with(['message' => 'Notification Deleted Successfully']);
-
- 
+        return redirect()->route('notification.index')->with(['success' => 'Notification deleted successfully']);
 
     }
 
@@ -204,7 +202,7 @@ public function store(Request $request)
 
     AdminNotification::truncate();  // or Notification::query()->delete(); if you want model events to trigger
 
-    return redirect()->route('notification.index')->with('message', 'All notifications have been deleted');
+    return redirect()->route('notification.index')->with('success', 'All notifications have been deleted');
 
 }
 

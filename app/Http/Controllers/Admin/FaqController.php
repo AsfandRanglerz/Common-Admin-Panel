@@ -114,10 +114,10 @@ class FaqController extends Controller
     public function faqdelete($id) {
         $faq = Faq::find($id);
         if ($faq) {
-            $faq->delete();
-            return redirect('/admin/faq-index')->with('success', 'FAQs deleted successfully');
+            Faq::destroy($id);
+            return redirect()->back()->with('success', 'FAQs deleted successfully');
         } else {
-            return redirect('/admin/faq-index')->with('error', 'FAQs not found');
+            return redirect()->back()->with('error', 'FAQs not found');
         }
     }
 

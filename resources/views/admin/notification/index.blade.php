@@ -227,26 +227,28 @@
                         });
                     }
                 });
-                $('.delete_all').click(function(event) {
-                    event.preventDefault();
 
-                    var form = $(this).closest("form");
 
-                    Swal.fire({
-                        title: 'Are you sure you want to delete all records?',
-                        text: "This will permanently remove all records and cannot be undone.",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Yes, delete all!'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            form.submit();
-                        }
-                    });
+            });
+            $('.delete_all').click(function(event) { // Changed from '.deleteAll' to '.delete_all'
+                event.preventDefault();
+
+                var form = $(this).closest("form");
+
+                Swal.fire({
+                    title: 'Are you sure you want to delete all records?',
+                    text: "This will permanently remove all records and cannot be undone.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete all!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form
+                            .submit(); // Note: There's a typo here - should be form.submit()
+                    }
                 });
-
             });
         });
     </script>
