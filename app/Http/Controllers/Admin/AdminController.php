@@ -5,9 +5,6 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use App\Mail\ResetPasswordMail;
 use App\Models\Admin;
-use App\Models\AuthorizedDealer;
-use App\Models\EnsuredCrop;
-use App\Models\Farmer;
 use App\Models\SideMenu;
 use App\Models\SubAdmin;
 use App\Models\SubAdminPermission;
@@ -22,19 +19,7 @@ class AdminController extends Controller
 
     public function getdashboard()
     {
-        // $totalFarmers = Farmer::all()->count();
-        // $totalDealers = AuthorizedDealer::all()->count();
-        // // $totalInsuranceCrops = EnsuredCrop::all()->count();
-        // // dd($totalFarmers);
-        // $sideMenuName = [];
-        // $sideMenuPermissions = [];
-
-        // if (Auth::guard('subadmin')->check()) {
-        //     $subAdminData = $this->getSubAdminPermissions();
-        //     $sideMenuPermissions = $subAdminData['sideMenuPermissions'];
-        //     $sideMenuName = $subAdminData['sideMenuName'];
-        // }
-        // dd($sideMenuName);
+       
         return view('admin.index');
     }
 

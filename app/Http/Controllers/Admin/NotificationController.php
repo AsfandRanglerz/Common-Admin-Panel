@@ -8,7 +8,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\User;
 
-use App\Models\Farmer;
 
 use App\Models\SubAdmin;
 
@@ -17,8 +16,6 @@ use App\Models\Notification;
 use Illuminate\Http\Request;
 
 use App\Jobs\NotificationJob;
-
-use App\Models\AuthorizedDealer;
 
 use App\Models\AdminNotification;
 
