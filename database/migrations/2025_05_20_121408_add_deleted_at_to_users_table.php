@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSideMenueTable extends Migration
+class AddDeletedAtToUsersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,10 @@ class CreateSideMenueTable extends Migration
      */
     public function up()
     {
-        Schema::create('side_menue', function (Blueprint $table) {
-            $table->id();
-            $table->string('name')->unique();
-            $table->timestamps();
+        Schema::table('users', function (Blueprint $table) {
+            //
+            $table->softDeletes();
+
         });
     }
 
@@ -27,6 +27,8 @@ class CreateSideMenueTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('side_menue');
+        Schema::table('users', function (Blueprint $table) {
+            //
+        });
     }
 }

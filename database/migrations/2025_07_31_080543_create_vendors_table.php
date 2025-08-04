@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSubAdminPermissionsTable extends Migration
+class CreateVendorsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,13 @@ class CreateSubAdminPermissionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('sub_admin_permissions', function (Blueprint $table) {
+        Schema::create('vendors', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('sub_admin_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('side_menu_id')->constrained('side_menus')->cascadeOnDelete();
-            $table->string('permissions')->nullable();
+             $table->string('name')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('email')->unique();
+            $table->string('password')->nullable();
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }
@@ -29,6 +31,6 @@ class CreateSubAdminPermissionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sub_admin_permissions');
+        Schema::dropIfExists('vendors');
     }
 }

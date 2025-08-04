@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSideMenusTable extends Migration
+class CreateUserRolesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,10 @@ class CreateSideMenusTable extends Migration
      */
     public function up()
     {
-        Schema::create('side_menus', function (Blueprint $table) {
+        Schema::create('user_roles', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->nullable();
+           $table->foreignId('subadmin_id')->constrained('sub_admins')->onDelete('cascade');
+            $table->foreignId('role_id')->constrained('roles')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -27,6 +28,6 @@ class CreateSideMenusTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('side_menu_permissions');
+        Schema::dropIfExists('user_roles');
     }
 }
