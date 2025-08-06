@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateNotificationsTable extends Migration
+class CreateSideMenusTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,9 @@ class CreateNotificationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('notifications', function (Blueprint $table) {
-            $table->id();
-            $table->string('user_type');
-            $table->string('image')->nullable();
-            $table->text('message');
-            $table->boolean('is_sent')->default(false);
+        Schema::create('side_menus', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string('name')->nullable();
             $table->timestamps();
         });
     }
@@ -30,6 +27,6 @@ class CreateNotificationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('notifications');
+        Schema::dropIfExists('side_menus');
     }
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class PasswordResets extends Migration
+class AddToggleToBlogsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,8 @@ class PasswordResets extends Migration
      */
     public function up()
     {
-        Schema::create('password_resets', function (Blueprint $table) {
-            $table->string('email')->index();
-            $table->string('token');
-            $table->timestamp('created_at')->nullable();
+        Schema::table('blogs', function (Blueprint $table) {
+            $table->boolean('toggle')->default(0);
         });
     }
 
@@ -25,8 +23,11 @@ class PasswordResets extends Migration
      *
      * @return void
      */
-    public function down()
-    {
-        //
-    }
+   public function down()
+{
+    Schema::table('blogs', function (Blueprint $table) {
+        $table->dropColumn('toggle');
+    });
+}
+
 }

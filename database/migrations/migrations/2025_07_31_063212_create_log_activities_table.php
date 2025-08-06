@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSeosTable extends Migration
+class CreateLogActivitiesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,17 +13,16 @@ class CreateSeosTable extends Migration
      */
     public function up()
     {
-        Schema::create('seos', function (Blueprint $table) {
+        Schema::create('log_activities', function (Blueprint $table) {
             $table->id();
-           $table->string('page')->unique();
-            $table->string('title')->nullable();
+            $table->unsignedBigInteger('performed_by')->nullable();
+            $table->string('role')->nullable();
+            $table->string('action');
+            $table->string('model');
+            $table->unsignedBigInteger('model_id');
             $table->text('description')->nullable();
-            $table->string('og_title')->nullable();
-            $table->text('og_description')->nullable();
-            $table->text('keywords')->nullable();
             $table->timestamps();
-             
-    });
+        });
     }
 
     /**
@@ -33,6 +32,6 @@ class CreateSeosTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('seos');
+        Schema::dropIfExists('log_activities');
     }
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddPositionToFaqsTable extends Migration
+class AddDeletedAtToUsersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,8 @@ class AddPositionToFaqsTable extends Migration
      */
     public function up()
     {
-        Schema::table('faqs', function (Blueprint $table) {
-            //
-            $table->integer('position')->default(0);
-
+        Schema::table('users', function (Blueprint $table) {
+            $table->softDeletes();
         });
     }
 
@@ -27,8 +25,8 @@ class AddPositionToFaqsTable extends Migration
      */
     public function down()
     {
-        Schema::table('faqs', function (Blueprint $table) {
-            //
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropSoftDeletes(); 
         });
     }
 }

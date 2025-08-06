@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddToggleToBlogsTable extends Migration
+class CreateRolesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,10 @@ class AddToggleToBlogsTable extends Migration
      */
     public function up()
     {
-        Schema::table('blogs', function (Blueprint $table) {
-            //
-        $table->boolean('toggle')->default(0); // 0 = off, 1 = on
-
+        Schema::create('roles', function (Blueprint $table) {
+            $table->id();
+            $table->string('name')->unique();
+            $table->timestamps();
         });
     }
 
@@ -25,11 +25,8 @@ class AddToggleToBlogsTable extends Migration
      *
      * @return void
      */
-   public function down()
-{
-    Schema::table('blogs', function (Blueprint $table) {
-        $table->dropColumn('toggle');
-    });
-}
-
+    public function down()
+    {
+        Schema::dropIfExists('roles');
+    }
 }

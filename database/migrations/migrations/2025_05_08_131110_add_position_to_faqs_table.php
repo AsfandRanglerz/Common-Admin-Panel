@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddRoleToSubAdminsTable extends Migration
+class AddPositionToFaqsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,8 @@ class AddRoleToSubAdminsTable extends Migration
      */
     public function up()
     {
-        Schema::table('sub_admins', function (Blueprint $table) {
-            
-            $table->string('role')->nullable(); // nullable agar required nahi
-
+        Schema::table('faqs', function (Blueprint $table) {
+            $table->integer('position')->default(0);
         });
     }
 
@@ -27,10 +25,6 @@ class AddRoleToSubAdminsTable extends Migration
      */
     public function down()
     {
-        Schema::table('sub_admins', function (Blueprint $table) {
-            //
-            $table->dropColumn('role');
-
-        });
+        Schema::dropIfExists('contact_us');
     }
 }

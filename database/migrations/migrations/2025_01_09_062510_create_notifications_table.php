@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateVendorsTable extends Migration
+class CreateNotificationsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,13 @@ class CreateVendorsTable extends Migration
      */
     public function up()
     {
-        Schema::create('vendors', function (Blueprint $table) {
+        Schema::create('notifications', function (Blueprint $table) {
             $table->id();
-             $table->string('name')->nullable();
-            $table->string('phone')->nullable();
-            $table->string('email')->unique();
-            $table->string('password')->nullable();
+            $table->string('user_type');
             $table->string('image')->nullable();
+            $table->string('title')->nullable();
+            $table->text('description');
+            $table->boolean('is_sent')->default(false);
             $table->timestamps();
         });
     }
@@ -31,6 +31,6 @@ class CreateVendorsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('vendors');
+        Schema::dropIfExists('notifications');
     }
 }

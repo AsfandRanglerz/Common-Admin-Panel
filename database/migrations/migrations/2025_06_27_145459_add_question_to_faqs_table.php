@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddPositionToBlogsTable extends Migration
+class AddQuestionToFaqsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,8 @@ class AddPositionToBlogsTable extends Migration
      */
     public function up()
     {
-        Schema::table('blogs', function (Blueprint $table) {
-                    $table->integer('position')->nullable()->after('id');
-
-            //
+        Schema::table('faqs', function (Blueprint $table) {
+            $table->text('question')->after('id');
         });
     }
 
@@ -27,9 +25,9 @@ class AddPositionToBlogsTable extends Migration
      */
     public function down()
     {
-        Schema::table('blogs', function (Blueprint $table) {
+        Schema::table('faqs', function (Blueprint $table) {
             //
-                    $table->dropColumn('position');
+                    $table->dropColumn('question');
 
         });
     }
