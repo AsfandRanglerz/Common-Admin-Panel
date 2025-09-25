@@ -51,32 +51,21 @@ class FaqController extends Controller
     }
 
 
-    public function Faqsstore(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'description' => 'required',
-            'questions' => 'required',
-        ]);
+   public function Faqsstore(Request $request)
+{
+    $request->validate([
+        'question' => 'required|string|max:255',
+        'description' => 'required|string',
+    ]);
 
-        // If validation fails
-        if ($validator->fails()) {
-            if ($request->ajax()) {
-                return response()->json([
-                    'success' => false,
-                    'errors' => $validator->errors(),
-                ], 422);
-            }
+    Faq::create([
+        'question' => $request->question,       // ✅ Must include this
+        'description' => $request->description,
+    ]);
 
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
+    return redirect()->back()->with('message', 'FAQ created successfully!');
+}
 
-        // Save data
-        Faq::create([
-            'questions' => $request->questions,
-            'description' => $request->description,
-        ]);
-        return redirect('/admin/faq')->with('success', 'FAQ created successfully');
-    }
 
 
 

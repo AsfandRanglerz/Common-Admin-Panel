@@ -59,67 +59,89 @@ class SubAdminController extends Controller
     }
 
 
-   public function store(Request $request)
-{
-    // return $request->all();
- $validator = Validator::make($request->all(), [
-        'name' => 'required|string|max:255',
-        'email' => [
-            'required',
-            'email',
-            'regex:/^[\w\.\-]+@[a-zA-Z0-9\-]+\.[a-zA-Z]{2,6}$/', 'unique:sub_admins,email', // Ensure email is unique
-        ],
-        'role' => 'required|exists:roles,id',
-        'image' => 'nullable|image|max:2048',
-        'password' => 'nullable|min:6'
-    ]);
+  
+    public function store(Request $request)
+    {
 
-    if ($validator->fails()) {
-        return redirect()->back()
-                    ->withErrors($validator) // Pass validation errors
-                    ->withInput();
+        // return $request->all();
+
+        $validator = Validator::make($request->all(), [
+
+            'name' => 'required|string|max:255',
+
+            'email' => [
+
+                'required',
+
+                'email',
+
+                'regex:/^[\w\.\-]+@[a-zA-Z0-9\-]+\.[a-zA-Z]{2,6}$/',
+
+                'unique:sub_admins,email',
+
+            ],
+
+            'role' => 'required|exists:roles,id',
+
+            'image' => 'nullable|image|max:2048',
+
+            'password' => 'nullable|min:6',
+
+        ]);
+
+        if ($validator->fails()) {
+
+            return redirect()->back()
+                ->withErrors($validator) // Pass validation errors
+                ->withInput();
+
+        }
+
+        // If validation passes
+
+        $validatedData = $validator->validated();
+
+        if ($request->hasFile('image')) {
+
+            $file = $request->file('image');
+
+            $filename = time().'.'.$file->getClientOriginalExtension();
+
+            $file->move(public_path('admin/assets/images/users/'), $filename);
+
+            $image = 'public/admin/assets/images/users/'.$filename;
+
+        } else {
+
+            $image = 'public/admin/assets/images/avator.png';
+
+        }
+
+        // $password = random_int(10000000, 99999999);
+
+        $password = '12345678'; // Default password
+
+        $subAdmin = SubAdmin::create([
+
+            'name' => $request->name,
+
+            'email' => $request->email,
+
+            'password' => bcrypt($password),
+
+            'status' => $request->status ?? 1,
+
+            'image' => $image,
+
+        ]);
+
+        // Attach role to pivot table
+
+        $subAdmin->roles()->attach($request->role);
+
+        return redirect()->route('subadmin.index')->with(['success' => 'Sub-Admin created successfully']);
+
     }
-// If validation passes
-$validatedData = $validator->validated();
-
-
-    if ($request->hasFile('image')) {
-        $file = $request->file('image');
-        $filename = time() . '.' . $file->getClientOriginalExtension();
-        $file->move(public_path('admin/assets/images/users/'), $filename);
-        $image = 'public/admin/assets/images/users/' . $filename;
-    } else {
-        $image = 'public/admin/assets/images/avator.png';
-    }
-
-    // $password = random_int(10000000, 99999999);
-
-    $password = $request->password; 
-
-    $subAdmin = SubAdmin::create([
-        'name' => $request->name,
-        'email' => $request->email,
-        'password' => bcrypt($password),
-        'plain_password' => $password,
-        'status' => $request->status ?? 1,
-        'image' => $image,
-    ]);
-
-    // Attach role to pivot table
-
-    $subAdmin->roles()->attach($request->role);
- 
-    $message = [
-        'name' => $request->name,
-        'email' => $request->email,
-        'password' => $password,
-        'role' => Role::find($request->role)->name ?? 'N/A',
-    ];
-    // Mail::to($request->email)->send(new SubAdminLoginPassword($message));
-
-    return redirect()->route('subadmin.index')->with(['success' => 'Sub-Admin created successfully']);
-}
-
 
 public function edit($id)
 {
@@ -175,12 +197,14 @@ $validatedData = $validator->validated();
             $subAdmin->image = $image;
         }
 
+		$password = '12345678';
+
         $subAdmin->update([
             'name' => $request->name,
             'email' => $request->email,
         //  'plain_password' => $password,
             'image' => $image,
-            'password' => $request->password ? bcrypt($request->password) : $subAdmin->password,
+            'password' => bcrypt($password),
         ]);
 
          // Single role update

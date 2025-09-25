@@ -12,6 +12,10 @@
                                 <h4>Users</h4>
                             </div>
                             <div class="card-body table-striped table-bordered table-responsive">
+								 @if (Auth::guard('admin')->check() ||
+                                        ($sideMenuPermissions->has('Users') && $sideMenuPermissions['Users']->contains('create')))
+                                    <a class="btn btn-primary mb-3" href="{{ route('user.createview') }}">Create</a>
+                                @endif
                                 <table class="table" id="table_id_events">
                                     <thead>
                                         <tr>
