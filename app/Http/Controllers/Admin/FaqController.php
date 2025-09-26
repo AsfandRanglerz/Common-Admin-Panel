@@ -51,21 +51,33 @@ class FaqController extends Controller
     }
 
 
-   public function Faqsstore(Request $request)
-{
-    $request->validate([
-        'question' => 'required|string|max:255',
-        'description' => 'required|string',
-    ]);
+    public function Faqsstore(Request $request)
+    {
+	
+        $validator = Validator::make($request->all(), [
+            'description' => 'required',
+            'question' => 'required',
+        ]);
 
-    Faq::create([
-        'question' => $request->question,       // ✅ Must include this
-        'description' => $request->description,
-    ]);
+        // If validation fails
+        if ($validator->fails()) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
 
-    return redirect()->back()->with('message', 'FAQ created successfully!');
-}
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
 
+        // Save data
+        Faq::create([
+            'question' => $request->question,
+            'description' => $request->description,
+        ]);
+        return redirect('/admin/faq')->with('success', 'FAQ created successfully');
+    }
 
 
 
@@ -83,18 +95,15 @@ class FaqController extends Controller
     }
     public function FaqsUpdate(Request $request, $id)
     {
-        $request->validate([
-            'description' => 'required',
-            'questions' => 'required',
-        ]);
-        
-
         $data = Faq::find($id);
         // AboutUs::find($data->id)->update($request->all());
         if (!$data) {
             return ('data not found.');
         } else {
-            $data->update($request->all());
+            $data->update([
+            'question' => $request->question,
+            'description' => $request->description,
+        ]);
         }
         return redirect('/admin/faq')->with('success', 'FAQs updated successfully');
     }

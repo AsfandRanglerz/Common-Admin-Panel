@@ -33,7 +33,6 @@
                                     <thead>
                                         <tr>
                                             <th>Sr.</th>
-                                            <th>Image</th>
                                             <th>Title</th>
                                             <th>Message</th>
                                             <th>Created At</th>
@@ -44,10 +43,6 @@
                                         @foreach ($notifications as $notification)
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
-                                                <td>
-                                                    <img src="{{ asset($notification->image) }}" alt="Notification Image"
-                                                        width="60" height="60">
-                                                </td>
                                                 <td>{{ $notification->title }}</td>
                                                 <td>{{ \Illuminate\Support\Str::limit(strip_tags($notification->description), 150, '...') }}
                                                 </td>
@@ -116,14 +111,6 @@
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
                         </div>
-
-                        <div class="form-group">
-                            <label for="userImage">Image <span style="color: red;">*</span></label>
-                            <input type="file" class="form-control-file" id="userImage" name="image" accept="image/*"
-                                required>
-                            <small class="text-danger">Max 2MB image size allowed.</small>
-                        </div>
-
                         <div class="form-group">
                             <label><strong>Title <span style="color:red;">*</span></strong></label>
                             <input type="text" name="title" class="form-control" placeholder="Title" required>

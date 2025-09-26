@@ -33,6 +33,7 @@
 @endsection
 
 @section('js')
+    <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
     <script>
         CKEDITOR.replace('description');
 
@@ -56,6 +57,11 @@
                     $('#description-error').text('Description is required.').show();
                 }
 
+            });
+
+            CKEDITOR.instances.description.on('focus', function() {
+                $('#description').removeClass('is-invalid');
+                $('#description-error').hide();
             });
 
             // Hide error on click

@@ -94,31 +94,55 @@ protected function sendDeactivationEmail($user, $reason)
         return view('users.create');
     }
 
-    public function create(Request $request)
-    {
-        $request->validate([
-            'name' => 'required',
-             'email' => [
+  public function create(Request $request)
+{
+    // 🔹 Validation
+    $request->validate([
+        'name' => 'required',
+        'image' => 'nullable|file|mimes:jpg,jpeg,png,gif,webp|max:2048',
+        'email' => [
             'required',
             'email',
             'regex:/^[\w\.\-]+@[a-zA-Z0-9\-]+\.[a-zA-Z]{2,6}$/'
         ],
-        'phone' => 'required|regex:/^[0-9]+$/|max:15',
-            'password' => 'required|min:6',
-        ]);
-    
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'password' => bcrypt($request->password),
-        ]);
+        'phone' => [
+            'required',
+            'regex:/^\+92[0-9]{10}$/'
+        ],
+        'password' => 'required|min:6',
+    ]);
 
+    // 🔹 Default image path
+    $imagePath = null;
 
-    
-        return redirect()->route('user.index')->with('success', 'User created successfully');
+    // 🔹 Check if image uploaded
+    if ($request->hasFile('image')) {
+        $file = $request->file('image');
+
+        // unique name
+        $imageName = time().'_'.uniqid().'.'.$file->getClientOriginalExtension();
+
+        // Move the uploaded file
+        $file->move(public_path('admin/assets/images/'), $imageName);
+
+        // ✅ DB کیلئے relative path manually بنائیں
+        $imagePath = 'public/admin/assets/images/'.$imageName;
+
+	
     }
-    
+
+    // 🔹 Save user to DB
+    User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'phone' => $request->phone,
+        'image' => $imagePath, // اگر null ہے تو null save ہوگا
+        'password' => bcrypt($request->password),
+    ]);
+
+    return redirect()->route('user.index')->with('success', 'User created successfully');
+}
+
 
 
     public function edit($id) {
@@ -126,15 +150,20 @@ protected function sendDeactivationEmail($user, $reason)
         return view('users.edit', compact('user'));
     }
     
-   public function update(Request $request, $id) {
+public function update(Request $request, $id)
+{
     $request->validate([
         'name' => 'required',
-         'email' => [
+        'image' => 'nullable|file|mimes:jpg,jpeg,png,gif,webp|max:2048',
+        'email' => [
             'required',
             'email',
             'regex:/^[\w\.\-]+@[a-zA-Z0-9\-]+\.[a-zA-Z]{2,6}$/'
         ],
-        'phone' => 'required|regex:/^[0-9]+$/|max:15',
+        'phone' => [
+            'required',
+            'regex:/^\+92[0-9]{10}$/'
+        ],
         'password' => 'nullable|min:6',
     ]);
 
@@ -146,6 +175,24 @@ protected function sendDeactivationEmail($user, $reason)
     $user->email = $request->email;
     $user->phone = $request->phone;
 
+    // Agar new image upload hui hai to hi update karo
+    if ($request->hasFile('image')) {
+        $file = $request->file('image');
+
+        // unique name
+        $imageName = time().'_'.uniqid().'.'.$file->getClientOriginalExtension();
+
+        // move to public/admin/assets/images
+        $file->move(public_path('admin/assets/images/'), $imageName);
+
+        // relative path (public نہ رکھو)
+        $imagePath = 'public/admin/assets/images/'.$imageName;
+
+        // assign new image path
+        $user->image = $imagePath;
+    }
+    // else case nahi lagانا, پرانی image jesi ki jesi رہے گی
+
     // Agar password diya gaya hai toh update karo
     if ($request->filled('password')) {
         $user->password = bcrypt($request->password);
@@ -155,6 +202,7 @@ protected function sendDeactivationEmail($user, $reason)
 
     return redirect('/admin/user')->with('success', 'User updated successfully');
 }
+
 
 
     public function delete($id) {

@@ -9,10 +9,7 @@ class Faq extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'questions',
-        'description'
-    ];
+    protected $guarded = [];
 
     protected $table = 'faqs';
 }

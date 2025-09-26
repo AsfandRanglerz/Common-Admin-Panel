@@ -57,6 +57,22 @@
                                         </div>
                                     </div>
 
+									
+									  <!-- IMAGE -->
+										<div class="col-sm-6 pl-sm-0 pr-sm-3">
+											<div class="form-group">
+												<label for="image">Image <span>(Optional)</span></label>
+												<input type="file" 
+													class="form-control @error('image') is-invalid @enderror"
+													id="image" 
+													name="image" 
+													accept="image/*">
+												@error('image')
+													<div class="invalid-feedback">{{ $message }}</div>
+												@enderror
+											</div>
+										</div>
+
                                     <!-- Password Field (fixed) -->
                                     <div class="col-sm-6 pl-sm-0 pr-sm-3">
                                         <div class="form-group position-relative">

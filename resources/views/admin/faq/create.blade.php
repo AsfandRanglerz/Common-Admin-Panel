@@ -18,11 +18,11 @@
                                     <div class="form-group">
                                         <label>Question <span style="color: red;">*</span></label>
                                         <input name="question"
-    class="form-control @error('question') is-invalid @enderror" required
-    placeholder="Enter question">
-@error('question')
-    <div class="invalid-feedback">{{ $message }}</div>
-@enderror
+											class="form-control @error('question') is-invalid @enderror" required
+											placeholder="Enter question">
+										@error('question')
+											<div class="invalid-feedback">{{ $message }}</div>
+										@enderror
 
                                     </div>
                                 </div>

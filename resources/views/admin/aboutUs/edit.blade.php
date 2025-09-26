@@ -1,17 +1,17 @@
 @extends('admin.layout.app')
-@section('title', 'Edit Terms & Conditions')
+@section('title', 'Edit About Us')
 @section('content')
     <!-- Main Content -->
     <div class="main-content">
         <section class="section">
             <div class="section-body">
-                <form id="termConditionForm" action="{{ url('admin/term-condition-update') }}" method="POST">
+                <form id="aboutUsForm" action="{{ url('admin/about-us-update') }}" method="POST">
                     @csrf
                     <div class="row">
                         <div class="col-12 col-md-12 col-lg-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h4>Edit Terms & Conditions</h4>
+                                    <h4>Edit About Us</h4>
                                 </div>
                                 <div class="card-body">
                                     <div class="form-group">
@@ -34,24 +34,23 @@
 @endsection
 
 @section('js')
-    <!-- CKEditor -->
     <script>
         CKEDITOR.replace('description');
 
         $(document).ready(function() {
-            $('#termConditionForm').on('submit', function(e) {
-                // Update CKEditor content into textarea
+            $('#aboutUsForm').on('submit', function(e) {
+                // Sync CKEditor content
                 for (instance in CKEDITOR.instances) {
                     CKEDITOR.instances[instance].updateElement();
                 }
 
                 const desc = CKEDITOR.instances.description.getData().trim();
 
-                // Clear previous errors
+                // Remove old errors
                 $('#description').removeClass('is-invalid');
                 $('#description-error').hide();
 
-                // Check if empty or only contains HTML tags/spaces
+                // Validation: check if blank or only tags
                 if (!desc || desc.replace(/&nbsp;|<[^>]*>/g, '').trim() === '') {
                     e.preventDefault();
                     $('#description').addClass('is-invalid');
@@ -60,7 +59,7 @@
                 }
             });
 
-            // Optional: Clear error on click inside CKEditor
+            // Optional: clear error when focused
             CKEDITOR.instances.description.on('focus', function() {
                 $('#description').removeClass('is-invalid');
                 $('#description-error').hide();

@@ -21,9 +21,9 @@
                                 <div class="card-body">
                                     <div class="form-group">
                                         <label>Question <span class="text-danger">*</span></label>
-                                        <input name="questions"
+                                        <input name="question"
                                             class="form-control @error('questions') is-invalid @enderror"
-                                            value="{{ old('questions', $data->questions) }}" required
+                                            value="{{ old('questions', $data->question) }}" required
                                             placeholder="Enter question">
 
                                         @error('questions')

@@ -33,13 +33,12 @@
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>
-                                                    @if ($user->image)
-                                                        <img src="{{ asset('public/' . $user->image) }}"
-                                                            style="width: 70px; height: 70px;">
-                                                    @else
-                                                        <img src="{{ asset('public/admin/assets/images/avator.png') }}"
-                                                            style="width: 70px; height: 70px;">
-                                                    @endif
+             @if ($user->image)
+    <img src="{{ asset($user->image) }}" style="width: 70px; height: 70px;">
+@else
+    <img src="{{ asset('public/admin/assets/images/avator.png') }}" style="width: 70px; height: 70px;">
+@endif
+
                                                 </td>
                                                 <td>{{ $user->name ?? '-' }}</td>
                                                 <td><a href="mailto:{{ $user->email }}">{{ $user->email ?? '-' }}</a>
