@@ -18,12 +18,12 @@ use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Twilio\Rest\Client;
 
-class EmailOtpController extends Controller
+class AuthController extends Controller
 {
     public function sendOtp(Request $request)
     {
         try {
-            $data = $request->only('email', 'phone', 'country');
+            $data = $request->only('email', 'phone', 'name');
 
             $rules = [];
             $messages = [];
@@ -66,17 +66,17 @@ class EmailOtpController extends Controller
                 ]
             );
 
-            if (!empty($request->email)) {
-                Mail::to($request->email)->send(new UserEmailOtp($otp));
-            } else {
+            // if (!empty($request->email)) {
+            //     Mail::to($request->email)->send(new UserEmailOtp($otp));
+            // } else {
                 // Here you can implement sending OTP via SMS if needed
-                $phone = $request->phone;
-                $twilio = new Client(env('TWILIO_SID'), env('TWILIO_TOKEN'));
-                $twilio->messages->create($phone, [
-                    'from' => env('TWILIO_PHONE_NUMBER'),
-                    'body' => "Dear user, your One-Time Password (OTP) is $otp. Please do not share this code with anyone. - RenSolutions",
-                ]);
-            }
+                // $phone = $request->phone;
+                // $twilio = new Client(env('TWILIO_SID'), env('TWILIO_TOKEN'));
+                // $twilio->messages->create($phone, [
+                //     'from' => env('TWILIO_PHONE_NUMBER'),
+                //     'body' => "Dear user, your One-Time Password (OTP) is $otp. Please do not share this code with anyone. - RenSolutions",
+                // ]);
+            // }
 
             return response()->json([
                 'message' => !empty($request->email)
@@ -163,58 +163,19 @@ class EmailOtpController extends Controller
             $user = User::create([
                 'email' => $otpRecord->email,
                 'phone' => $otpRecord->phone,
-                'country' => $otpRecord->country,
+                'name' => $otpRecord->name,
                 'password' => Hash::make($request->password),
                 'status' => is_null($otpRecord->phone) ? 1 : (is_null($otpRecord->email) ? 2 : null),
-            ]);
-
-            // ✅ Signup reward points read karo
-            $rewardPoints = \App\Models\SignupRewardSetting::first();
-            $points = $rewardPoints ? $rewardPoints->points : 0;
-
-            // ✅ User wallet me insert karo
-            \App\Models\UserWallet::create([
-                'user_id' => $user->id,
-                'total_points' => $points,
             ]);
 
             // ✅ Delete OTP record
             $otpRecord->delete();
 
             // ✅ Notification send (Push + DB)
-            // Title & Description
-            $title = 'Signup Reward Points';
-            $description = "Welcome {$user->email}, you’ve earned {$points} points for signing up!";
-
-            // Extra Data for Push Notification
-            $data = [
-                'type' => 'signup_points',
-                'points' => $points,
-            ];
-
-            // Push Notification (only if fcm_token exists)
-            if ($user && $user->fcm) {
-                // Dispatch job to send push notification
-                dispatch(new JobNotification(
-                    $user->fcm,
-                    $title,
-                    $description,
-                    $data
-                ));
-            }
-
-            // Save Notification in Database
-            \App\Models\Notification::create([
-                'user_id' => $user->id,
-                'title' => $title,
-                'description' => $description,
-                'seenByUser' => 0, // unseen by default
-            ]);
-
+            // Title & Description   
             return response()->json([
                 'message' => 'Registered successfully.',
-                'user_id' => $user->id,
-                'assigned_points' => $points,
+                'user' => $user,
             ], 200);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json($e->errors(), 422);
@@ -516,4 +477,339 @@ class EmailOtpController extends Controller
             return response()->json(['error' => 'Something went wrong'.$e->getMessage()], 500);
         }
     }
+
+
+	 public function login(Request $request)
+    {
+
+        try {
+            // Validate request
+
+            $loginInput = $request->input('email') ?: $request->input('phone');
+
+            // Trim and clean the input
+            $loginInput = trim($loginInput);
+
+            // Determine if login is email or phone
+            $fieldType = filter_var($loginInput, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone';
+
+            // For phone numbers, remove any non-digit characters
+
+            $user = User::where($fieldType, $loginInput)->first();
+
+            if (! $user) {
+                return response()->json(['message' => 'User not found'], 404);
+            }
+
+            if (! Hash::check($request->password, $user->password)) {
+                return response()->json(['message' => 'Invalid password'], 401);
+            }
+
+            // Update FCM token
+            $user->fcm = $request->fcm;
+            $user->save();
+
+            // Create Sanctum token
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            return response()->json([
+                'message' => 'Logged in successfully',
+                'token' => $token,
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name ?? null,
+                    'email' => $user->email ?? null,
+                    'phone' => $user->phone ?? null,
+                    'image' => $user->image ?? null,
+                    'country' => $user->country ?? null,
+                    'fcm' => $user->fcm ?? null,
+                ],
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Login failed: '.$e->getMessage(),
+            ], 500);
+        }
+    }
+
+    // Logout function
+    public function logout(Request $request)
+    {
+        try {
+            $user = $request->user();
+
+            if (! $user) {
+                return response()->json([
+                    'message' => 'User not authenticated',
+
+                ], 401);
+            }
+
+            // Revoke all tokens
+            $user->tokens()->delete();
+
+            return response()->json([
+                'message' => 'Logged out successfully',
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Logged out failed: '.$e->getMessage(),
+            ], 500);
+        }
+    }
+
+	// forget passwords
+
+	 public function forgotPassword(Request $request)
+    {
+        try {
+            $type = $request->type; // 'email' or 'phone'
+            $identifier = $request->identifier; // This will hold either email or phone
+
+            // Validate type existence
+            if (! in_array($type, ['email', 'phone'])) {
+                return response()->json(['message' => 'Invalid type provided'], 400);
+            }
+
+            // Determine if input is an email or phone
+            $isEmail = filter_var($identifier, FILTER_VALIDATE_EMAIL);
+            $isPhone = preg_match('/^[0-9]{7,15}$/', $identifier); // basic phone number pattern
+
+            // Cross validation: If type = email but phone entered
+
+            // Find user by email or phone
+            $user = User::where($type, $identifier)->first();
+
+            $label = $type === 'phone' ? 'Phone number' : 'Email';
+
+            if (! $user) {
+                return response()->json([
+                    'message' => $label.' does not exist',
+                ], 404);
+            }
+
+            // Generate OTP and token
+            $otp = rand(1000, 9999);
+            $otpToken = Str::uuid();
+
+            // Store in database
+            EmailOtp::create([
+                $type => $identifier,
+                'otp' => $otp,
+                'otp_token' => $otpToken,
+            ]);
+
+            // if ($type === 'email') {
+            //     Mail::to($identifier)->send(new ForgotOTPMail($otp));
+            // }
+            // if ($type === 'phone') {
+            //     // Send SMS
+            //     $twilio = new Client(env('TWILIO_SID'), env('TWILIO_TOKEN'));
+            //     $twilio->messages->create($identifier, [
+            //         'from' => env('TWILIO_PHONE_NUMBER'),
+            //         'body' => "Dear user, your One-Time Password (OTP) is $otp. Please do not share this code with anyone. - RenSolutions",
+            //     ]);
+            // }
+
+            $msg = $type === 'phone'
+            ? 'OTP sent successfully to your phone'
+            : 'OTP sent successfully to your email';
+
+            return response()->json([
+                'message' => $msg,
+                'otp_token' => $otpToken,
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Something went wrong',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+
+    }
+
+    public function forgotverifyOtp(Request $request)
+    {
+        try {
+            // Validate input
+            $request->validate([
+                'otp' => 'required|digits:4',
+                // 'otp_token' => 'required'
+            ]);
+
+            // Find OTP record
+            $otpRecord = EmailOtp::where('otp_token', $request->otp_token)->latest()->first();
+
+            if (! $otpRecord) {
+                return response()->json([
+                    'message' => 'Invalid OTP token',
+                ], 400);
+            }
+
+            // Check OTP value
+            if ($otpRecord->otp !== $request->otp) {
+                return response()->json([
+                    'message' => 'Invalid OTP',
+                ], 402);
+            }
+
+            // Match user by email or phone
+            $user = null;
+
+            if ($otpRecord->email) {
+                $user = User::where('email', $otpRecord->email)->first();
+            } elseif ($otpRecord->phone) {
+                $user = User::where('phone', $otpRecord->phone)->first();
+            }
+
+            if (! $user) {
+                return response()->json([
+                    'message' => 'User not found',
+                ], 404);
+            }
+
+            // Mark OTP as verified
+            $otpRecord->update(['verified' => true]);
+
+            return response()->json([
+                'message' => 'OTP verified successfully',
+                'otp_token' => $otpRecord->otp_token,
+            ], 200);
+
+        } catch (ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation error',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Something went wrong',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+   
+
+    public function resendOtp(Request $request)
+    {
+        try {
+            $type = $request->type;
+            $identifier = $request->identifier;
+
+            if (! in_array($type, ['email', 'phone'])) {
+                return response()->json(['message' => 'Invalid type provided'], 400);
+            }
+
+            $recentOtp = EmailOtp::where($type, $identifier)
+                ->latest()
+                ->first();
+
+            if (! $recentOtp) {
+                return response()->json([
+                    'message' => 'No OTP record found for this email',
+                ], 404);
+            }
+
+            $otp = rand(1000, 9999);
+            $otpToken = Str::uuid();
+
+            $recentOtp->update([
+                'otp' => $otp,
+                'otp_token' => $otpToken,
+            ]);
+
+            // if ($type === 'email') {
+            //     Mail::to($identifier)->send(new ForgotOTPMail($otp));
+            // }
+
+            // if ($type === 'phone') {
+            //     $twilio = new Client(env('TWILIO_SID'), env('TWILIO_TOKEN'));
+            //     $twilio->messages->create($identifier, [
+            //         'from' => env('TWILIO_PHONE_NUMBER'),
+            //         'body' => "Dear user, your One-Time Password (OTP) is $otp. Please do not share this code with anyone. - RenSolutions",
+            //     ]);
+            // }
+
+         return response()->json([
+    'message' => !empty($request->type === 'email')
+        ? 'A verification OTP has been sent to your email'
+        : 'A verification OTP has been sent to your phone',
+    'otp_token' => $otpToken,
+	], 200);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation error',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Kuch ghalat ho gaya',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function resetPassword(Request $request)
+    {
+
+        try {
+            // Validate input
+            $request->validate([
+                'otp_token' => 'required|uuid',
+                'new_password' => 'required|min:8',
+            ]);
+
+            // Fetch OTP record using token
+            $otpRecord = EmailOtp::where('otp_token', $request->otp_token)->first();
+
+            if (! $otpRecord || ! $otpRecord->verified) {
+                return response()->json(['message' => 'Invalid or unverified OTP token'], 400);
+            }
+
+            // Find the user by email or phone
+            if ($otpRecord->email !== null) {
+                $user = User::where('email', $otpRecord->email)->first();
+            } elseif ($otpRecord->phone !== null) {
+                $user = User::where('phone', $otpRecord->phone)->first();
+            }
+
+            if (! $user) {
+                return response()->json(['message' => 'User not found'], 404);
+            }
+
+            // Prevent reuse of old password
+            if (Hash::check($request->new_password, $user->password)) {
+                return response()->json([
+                    'message' => 'This password is already in use. Please choose a different password',
+                ], 422);
+            }
+
+            // Update password
+            $user->password = Hash::make($request->new_password);
+            $user->save();
+
+            // Delete OTP record
+            $otpRecord->delete();
+
+            return response()->json([
+                'message' => 'Password reset successfully',
+            ], 200);
+
+        } catch (ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation error',
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Something went wrong',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }
+

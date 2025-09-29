@@ -5,7 +5,6 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Admin\SeoController;
 use App\Http\Controllers\SideMenueController;
-use App\Http\Controllers\Api\EmailOtpController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\SideMenuPermissionController;
 
@@ -34,13 +33,22 @@ Route::post('/permission-insert', [SideMenuPermissionController::class, 'assignP
 // seo routes
 Route::post('/seo-bulk', [SeoController::class, 'storeBulk'])
      ->name('seo.bulk-update');
-
+//Auth routes for user
+Route::post('/send-otp', [AuthController::class, 'sendOtp']);
+Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
+Route::post('/register-user', [AuthController::class, 'registerUser']);
+Route::post('/user-login', [AuthController::class, 'login']);
+Route::post('/forgotpassword', [AuthController::class, 'forgotPassword']);
+Route::post('/forgotverifyotp', [AuthController::class, 'forgotverifyOtp']);
+Route::post('/resend-otp', [AuthController::class, 'resendOtp']);
+Route::post('/resetpassword', [AuthController::class, 'resetPassword']);
 
 
 
 
 
 Route::middleware('auth:sanctum')->group(function () {
+	Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('get-profile', [AuthController::class, 'getProfile']); // Get Profile
     Route::put('update-profile', [AuthController::class, 'updateProfile']); // Update Profile
 
@@ -49,13 +57,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/verify-reset-token/{token}', [AuthController::class, 'verifyResetToken']);
     Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
-	Route::post('/send-otp', [EmailOtpController::class, 'sendOtp']);
-Route::post('/verify-otp', [EmailOtpController::class, 'verifyOtp']);
-Route::post('/register-user', [EmailOtpController::class, 'registerUser']);
+	
 Route::post('/submit-contact-us', [ContactUsController::class, 'Submitcontact'])->name('contact.send');
 
-  Route::post('/update-profile', [EmailOtpController::class, 'requestUpdateOtp']);
-    Route::post('/update-profile-verify', [EmailOtpController::class, 'verifyAndUpdateContact']);
-    Route::get('/get-logged-in-user-info', [EmailOtpController::class, 'getLoggedInUserInfo']);
+  Route::post('/update-profile', [AuthController::class, 'requestUpdateOtp']);
+    Route::post('/update-profile-verify', [AuthController::class, 'verifyAndUpdateContact']);
+    Route::get('/get-logged-in-user-info', [AuthController::class, 'getLoggedInUserInfo']);
 });
 
