@@ -53,7 +53,7 @@
 
                                             @if ($data->image)
                                                 <img src="{{ asset('public/' . $data->image) }}" alt="Blog Image"
-                                                    width="150" height="100" class="mt-3">
+                                                    style="width: 100px; height: 100px; margin-left:5px;border: 1px solid #ddd;" class="mt-3">
                                             @endif
                                         </div>
                                     </div>

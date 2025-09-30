@@ -49,10 +49,10 @@
                                                 <td>
                                                     @if ($blog->image)
                                                         <img src="{{ asset('public/' . $blog->image) }}" alt="blog image"
-                                                            width="80" height="60">
+                                                            width="50" height="50">
                                                     @else
                                                         <img src="{{ asset('public/admin/assets/images/default.png') }}"
-                                                            alt="blog image" width="80" height="60">
+                                                            alt="blog image" width="50" height=50">
                                                     @endif
                                                 </td>
 

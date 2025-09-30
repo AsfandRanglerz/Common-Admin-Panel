@@ -53,8 +53,6 @@
                                             @enderror
                                         </div>
                                     </div>
-
-
 									  <!-- IMAGE -->
 										<div class="col-sm-6 pl-sm-0 pr-sm-3">
 											<div class="form-group">
@@ -69,8 +67,6 @@
 												@enderror
 											</div>
 										</div>
-
-
                                     <!-- Password Field -->
                                     <div class="col-sm-6 pl-sm-0 pr-sm-3">
                                         <div class="form-group position-relative">
