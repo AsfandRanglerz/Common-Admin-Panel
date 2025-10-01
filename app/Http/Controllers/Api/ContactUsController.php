@@ -91,6 +91,7 @@ class ContactUsController extends Controller
             'data' => $contact,
         ]);
     }
+	// sub
 
 	
 	public function Submitcontact(Request $request){

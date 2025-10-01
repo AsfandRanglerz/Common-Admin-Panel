@@ -7,6 +7,10 @@ use App\Http\Controllers\Admin\SeoController;
 use App\Http\Controllers\SideMenueController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\SideMenuPermissionController;
+use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\ContactUsController;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -51,6 +55,7 @@ Route::middleware('auth:sanctum')->group(function () {
 	Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('get-profile', [AuthController::class, 'getProfile']); // Get Profile
     Route::put('update-profile', [AuthController::class, 'updateProfile']); // Update Profile
+	Route::post('/update-profile-verify', [AuthController::class, 'verifyAndUpdateContact']);
 
     // Password reset for Admin & SubAdmin via API
     Route::post('/forgot-password', [AuthController::class, 'sendResetLink']);
@@ -63,5 +68,18 @@ Route::post('/submit-contact-us', [ContactUsController::class, 'Submitcontact'])
   Route::post('/update-profile', [AuthController::class, 'requestUpdateOtp']);
     Route::post('/update-profile-verify', [AuthController::class, 'verifyAndUpdateContact']);
     Route::get('/get-logged-in-user-info', [AuthController::class, 'getLoggedInUserInfo']);
+//contact us 
+Route::post('/submit-contact-us', [ContactUsController::class, 'Submitcontact'])->name('contact.send');
+Route::get('/getcontact', [ContactUsController::class, 'contactUs'])->name('getcontact');
+
+
 });
 
+
+
+	// Notifications
+Route::get('/notifications', [NotificationController::class, 'getUserNotifications'])->middleware('auth:sanctum');
+Route::get('/notification/{id}', [NotificationController::class, 'showNotification'])->middleware('auth:sanctum');
+Route::post('/clearnotification', [NotificationController::class, 'clearAll'])->middleware('auth:sanctum');
+Route::post('/notifications-seen', [NotificationController::class, 'seenNotification'])
+    ->name('notifications.seen');

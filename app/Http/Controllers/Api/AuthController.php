@@ -220,6 +220,7 @@ class AuthController extends Controller
      public function requestUpdateOtp(Request $request)
     {
         try {
+
             $user = Auth::user();
             if (! $user) {
                 return response()->json(['error' => 'Unauthorized'], 401);
@@ -289,12 +290,12 @@ class AuthController extends Controller
 
 				if (isset($data['phone']) && trim($data['phone']) === trim($user->phone)) {
 
-					if (isset($data['name']) && trim($data['name']) !== '') {
-						$user->name = $data['name'];
+					if (isset($updatedFields['name']) && trim($updatedFields['name']) !== '') {
+						$user->name = $updatedFields['name'];
 					}
 
-					if (isset($data['image']) && trim($data['image']) !== '') {
-						$user->image = $data['image'];
+					if (isset($updatedFields['image']) && trim($updatedFields['image']) !== '') {
+						$user->image = $updatedFields['image'];
 					}
 
 					$user->save(); // changes persist in DB
@@ -322,6 +323,24 @@ class AuthController extends Controller
                  if (isset($data['phone']) && empty($updatedFields) && empty($data['email'])) {
                     return response()->json(['message' => "You can't update your phone"], 200);
                 }
+
+				if (isset($data['email']) && trim($data['email']) === trim($user->email)) {
+
+					if (isset($data['name']) && trim($data['name']) !== '') {
+						$user->name = $data['name'];
+					}
+
+					if (isset($data['image']) && trim($data['image']) !== '') {
+						$user->image = $data['image'];
+					}
+
+					$user->save(); // changes persist in DB
+
+					return response()->json([
+						'message' => "Profile updated successfully."
+					]);
+				}
+
                 if (!empty($data['email']) && $data['email'] !== $user->email) {
                     $otp = rand(1000, 9999);
                     $otpToken = Str::uuid();
@@ -361,7 +380,23 @@ class AuthController extends Controller
                 $pendingData['otp'] = $otp;
                 $pendingData['otp_token'] = $otpToken;
 
-                EmailOtp::create($pendingData);
+                 $condition = [];
+
+				if (!empty($pendingData['email'])) {
+					$condition = ['email' => $pendingData['email']];
+				} elseif (!empty($pendingData['phone'])) {
+					$condition = ['phone' => $pendingData['phone']];
+				}
+
+				EmailOtp::updateOrCreate(
+					$condition, // search by email OR phone
+					[
+						'otp' => $pendingData['otp'], 
+						'name' => $pendingData['name'],
+						'image' => $pendingData['image'],
+						'country' => $pendingData['country'],
+					]
+				);
 
                 if ($sendOtpTo === 'phone') {
                     $phone = $pendingData['phone'];
@@ -369,18 +404,19 @@ class AuthController extends Controller
                         $phone = '+'.$phone;
                     }
                     try {
-                        $twilio = new Client(env('TWILIO_SID'), env('TWILIO_TOKEN'));
-                        $twilio->messages->create($phone, [
-                            'from' => env('TWILIO_PHONE_NUMBER'),
-                            'body' => "Your OTP is $otp",
-                        ]);
+                    //     $twilio = new Client(env('TWILIO_SID'), env('TWILIO_TOKEN'));
+                    //     $twilio->messages->create($phone, [
+                    //         'from' => env('TWILIO_PHONE_NUMBER'),
+                    //         'body' => "Your OTP is $otp",
+                    //     ]
+					// );
                     } catch (\Exception $e) {
-                        return response()->json(['error' => 'Twilio failed', 'message' => $e->getMessage()], 500);
+                        // return response()->json(['error' => 'Twilio failed', 'message' => $e->getMessage()], 500);
                     }
                     $msg = 'A verification OTP has been sent to your phone.';
                 } else {
-                    Mail::to($pendingData['email'])->send(new UserEmailOtp($otp));
-                    $msg = 'A verification OTP has been sent to your email.';
+                    // Mail::to($pendingData['email'])->send(new UserEmailOtp($otp));
+                    // $msg = 'A verification OTP has been sent to your email.';
                 }
 
                 return response()->json(['message' => $msg, 'otp_token' => $otpToken], 200);
@@ -573,10 +609,6 @@ class AuthController extends Controller
                 return response()->json(['message' => 'Invalid type provided'], 400);
             }
 
-            // Determine if input is an email or phone
-            $isEmail = filter_var($identifier, FILTER_VALIDATE_EMAIL);
-            $isPhone = preg_match('/^[0-9]{7,15}$/', $identifier); // basic phone number pattern
-
             // Cross validation: If type = email but phone entered
 
             // Find user by email or phone
@@ -595,12 +627,13 @@ class AuthController extends Controller
             $otpToken = Str::uuid();
 
             // Store in database
-            EmailOtp::create([
-                $type => $identifier,
-                'otp' => $otp,
-                'otp_token' => $otpToken,
-            ]);
-
+             EmailOtp::updateOrCreate(
+				[$type => $identifier], // condition (email OR phone)
+				[
+					'otp'       => $otp,
+					'otp_token' => $otpToken,
+				]
+			);
             // if ($type === 'email') {
             //     Mail::to($identifier)->send(new ForgotOTPMail($otp));
             // }

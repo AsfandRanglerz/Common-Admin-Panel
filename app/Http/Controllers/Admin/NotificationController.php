@@ -58,7 +58,7 @@ class NotificationController extends Controller
 
     }
 
-    
+  
     public function store(Request $request)
     {
         // 1️⃣ Validation
@@ -93,20 +93,18 @@ class NotificationController extends Controller
 
             // 3.2 Push Notification (if user has fcm_token)
             // $customer = User::where('id', $userId)->first();
-            // dd($customer);
-
+           
             // if ($customer && $customer->fcm) {
-            //     // dd($customer->fcm);
             //     $data = [
             //         'id' => $notification->id,
-            //         'type' => 'admin_notification', // optional type field
+            //         'type' => 'admin_notification', 
             //         'title' => $request->title,
             //         'body' => $request->description,
             //     ];
 
-            //     // dd($data);
+                // dd($data);
 
-            //     // Dispatch the notification job
+                // Dispatch the notification job
             //     dispatch(new JobNotification(
             //         $customer->fcm,
             //         $request->title,
