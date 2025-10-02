@@ -178,12 +178,13 @@ Route::post('/blogs/reorder', [BlogController::class, 'reorder'])->name('blog.re
 
     // ############ Web Routes #################
 
-         Route::get('/home-page', [WebController::class, 'homepage'])->name('web.homepage');
-         Route::get('/about-page', [WebController::class, 'aboutpage'])->name('web.aboutpage');
+         Route::get('admin/home-page', [WebController::class, 'homepage'])->name('web.homepage');
+         Route::get('admin/about-page', [WebController::class, 'Aboutpage'])->name('web.aboutpage');
          Route::get('/contact-page', [WebController::class, 'contactpage'])->name('web.contactpage');
-
-
-
+		Route::get('admin/terms-conditions', [WebController::class, 'termsConditionspage'])->name('terms.conditions');
+		Route::get('admin/privacy-policy', [WebController::class, 'privacyPolicy'])->name('privacy.policy');
+		Route::get('admin/contactUs', [WebController::class, 'Contactuspage'])->name('contact.us');
+		
 
     // ############ Contact Us #################
 Route::get('/admin/contact-us', [ContactController::class, 'index'])->name('contact.index') ->middleware('check.permission:Contact us,view');

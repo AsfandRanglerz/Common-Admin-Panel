@@ -3,8 +3,8 @@
 <link
     href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&amp;family=Nunito:wght@600;700;800&amp;family=Pacifico&amp;display=swap"
     rel="stylesheet">
+		<title>Privacy Policy</title>
 
-	<title>About Us</title>
 
 {{-- favicon --}}
 
@@ -112,7 +112,7 @@
     }
 </style>
 <div class="banner">
-    <h1>About Us</h1>
+    <h1>Privacy Policy</h1>
 </div>
 <div class="container">
     @if(!empty($data->description))
