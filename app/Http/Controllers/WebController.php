@@ -39,19 +39,19 @@ return view('web.homepage', [
 
 //     }
 
-//     public function contactpage()
-//     {
-//        $seo = Seo::where('page', 'contact')->first();
+    public function Contactuspage()
+    {
+       $seo = Seo::where('page', 'contact')->first();
 
-// return view('web.contactpage', [
-//     'seo_title' => $seo->title,
-//     'seo_description' => $seo->description,
-//     'seo_keywords' => $seo->keywords,
-//     'seo_og_title' => $seo->og_title,
-//     'seo_og_description' => $seo->og_description,
-// ]);
+return view('web.contact', [
+    'seo_title' => $seo->title,
+    'seo_description' => $seo->description,
+    'seo_keywords' => $seo->keywords,
+    'seo_og_title' => $seo->og_title,
+    'seo_og_description' => $seo->og_description,
+]);
 
-//     }
+    }
 
 	 public function termsConditionspage() {
 
@@ -73,9 +73,6 @@ return view('web.homepage', [
     return view('web.aboutpage', compact('data'));
 }
 
-	public function Contactuspage() {
-		return view('web.contact');
-	}
 
 
 }

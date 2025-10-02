@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Contact Us</title>
+ <title>{{ $seo_title ?? 'Default Title' }}</title>
+    <meta name="description" content="{{ $seo_description ?? 'Default Description' }}">
+    <meta name="keywords" content="{{ $seo_keywords ?? 'keyword1, keyword2' }}">
+    <meta property="og:title" content="{{ $seo_og_title ?? '' }}">
+    <meta property="og:description" content="{{ $seo_og_description ?? '' }}">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&amp;family=Nunito:wght@600;700;800&amp;family=Pacifico&amp;display=swap" rel="stylesheet">
 <style>
