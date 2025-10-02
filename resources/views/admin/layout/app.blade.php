@@ -13,6 +13,7 @@
     <!-- ========== External CSS Libraries (CDN) ========== -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
     <!-- ========== Vendor CSS (Public Assets) ========== -->
     <link rel="stylesheet" href="{{ asset('public/admin/assets/css/app.min.css') }}">

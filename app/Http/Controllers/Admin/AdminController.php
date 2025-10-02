@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
@@ -37,51 +38,93 @@ class AdminController extends Controller
     return view('admin.auth.profile', compact('data'));
 }
 
-    public function update_profile(Request $request)
+    // public function update_profile(Request $request)
 
-    {
+    // {
 
-        // $request->validate([
 
-        //     'name' => 'required',
-
-        //     'email' => 'required',
-
-        //     'phone' => 'required'
-
-        // ]);
-
-        $data = $request->only(['name', 'email', 'phone']);
+    //     $data = $request->only(['name', 'email', 'phone']);
 
 
 
-        if ($request->hasFile('image')) {
+    //     if ($request->hasFile('image')) {
 
-            $file = $request->file('image');
+    //         $file = $request->file('image');
 
-            $extension = $file->getClientOriginalExtension();
+    //         $extension = $file->getClientOriginalExtension();
 
-            $filename = time() . '.' . $extension;
+    //         $filename = time() . '.' . $extension;
 
-            $file->move('public/admin/assets/images/admin', $filename);
+    //         $file->move('public/admin/assets/images/admin', $filename);
 
-            $data['image'] = 'public/admin/assets/images/admin/' . $filename;
+    //         $data['image'] = 'public/admin/assets/images/admin/' . $filename;
 
-        }
+    //     }
 
-        if (Auth::guard('admin')->check()) {
+    //     if (Auth::guard('admin')->check()) {
 
-            Admin::find(Auth::guard('admin')->id())->update($data);
+    //         Admin::find(Auth::guard('admin')->id())->update($data);
 
-        } else {
+    //     } else {
 
-            SubAdmin::find(Auth::guard('subadmin')->id())->update($data);
+    //         SubAdmin::find(Auth::guard('subadmin')->id())->update($data);
 
-        }
+    //     }
 
-        return back()->with('success', 'Profile updated successfully');
+    //     return back()->with('success', 'Profile updated successfully');
 
+    // }
+
+public function update_profile(Request $request)
+{
+    $data = $request->only(['name', 'email', 'phone']);
+
+    if ($request->hasFile('image')) {
+        $file = $request->file('image');
+        $extension = $file->getClientOriginalExtension();
+        $filename = time() . '.' . $extension;
+        $file->move('public/admin/assets/images/admin', $filename);
+        $data['image'] = 'public/admin/assets/images/admin/' . $filename;
     }
+
+    // Current logged in user
+    $user = Auth::guard('admin')->check()
+        ? Admin::find(Auth::guard('admin')->id())
+        : SubAdmin::find(Auth::guard('subadmin')->id());
+
+    // ✅ Password Change Logic (only if any password field is filled)
+    if ($request->filled('old_password') || $request->filled('new_password') || $request->filled('confirm_password')) {
+        $request->validate([
+            'old_password' => 'required',
+            'new_password' => 'required|min:8',
+            'confirm_password' => 'required|same:new_password',
+        ]);
+
+        // Check old password
+        if (!Hash::check($request->old_password, $user->password)) {
+            return back()
+                ->withErrors(['old_password' => 'Old password is incorrect'])
+                ->withInput();
+        }
+
+        // ✅ Prevent reusing old password
+        if (Hash::check($request->new_password, $user->password)) {
+            return back()
+                ->withErrors(['new_password' => 'This is your current password. Please enter a different password.'])
+                ->withInput();
+        }
+
+        // Update new password
+        $user->password = Hash::make($request->new_password);
+    }
+
+    // Update other profile data
+    $user->update($data);
+
+    return back()->with('success', 'Profile updated successfully');
+}
+
+
 
     public function forgetPassword()
     {
