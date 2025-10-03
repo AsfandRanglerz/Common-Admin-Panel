@@ -56,6 +56,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('get-profile', [AuthController::class, 'getProfile']); // Get Profile
     Route::put('update-profile', [AuthController::class, 'updateProfile']); // Update Profile
 	Route::post('/update-profile-verify', [AuthController::class, 'verifyAndUpdateContact']);
+	    Route::get('/get-logged-in-user-info', [AuthController::class, 'getLoggedInUserInfo']);
+
 
     // Password reset for Admin & SubAdmin via API
     Route::post('/forgot-password', [AuthController::class, 'sendResetLink']);
@@ -67,7 +69,6 @@ Route::post('/submit-contact-us', [ContactUsController::class, 'Submitcontact'])
 
   Route::post('/update-profile', [AuthController::class, 'requestUpdateOtp']);
     Route::post('/update-profile-verify', [AuthController::class, 'verifyAndUpdateContact']);
-    Route::get('/get-logged-in-user-info', [AuthController::class, 'getLoggedInUserInfo']);
 //contact us 
 Route::post('/submit-contact-us', [ContactUsController::class, 'Submitcontact'])->name('contact.send');
 Route::get('/getcontact', [ContactUsController::class, 'contactUs'])->name('getcontact');

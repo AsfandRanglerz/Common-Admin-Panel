@@ -187,36 +187,6 @@ class AuthController extends Controller
         }
     }
 
-    public function getLoggedInUserInfo()
-    {
-        try {
-            $user = Auth::user();
-
-            if (! $user) {
-                return response()->json(['error' => 'Unauthorized'], 401);
-            }
-
-            $totalPoints = UserWallet::with('user')
-                ->where('user_id', $user->id)
-                ->first();
-
-            return response()->json([
-                'name' => $user->name ?? null,
-                'image' => $user->image ? 'public/'.$user->image : 'https://ranglerzwp.xyz/myren/public/admin/assets/images/avator.png',
-                'country' => $user->country ?? null,
-                'email' => $user->email ?? null,
-                'phone' => $user->phone ?? null,
-                'points' => $totalPoints ?? 0,
-            ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => 'Something Went Wrong.',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
-    }
-
- 
      public function requestUpdateOtp(Request $request)
     {
         try {
@@ -541,6 +511,12 @@ class AuthController extends Controller
                 return response()->json(['message' => 'Invalid password'], 401);
             }
 
+			 if ($user->toggle == 0) {
+            return response()->json([
+                'message' => 'Your account has been deactivated. Please check your email for details or contact the administrator.'
+            ], 403);
+             }
+
             // Update FCM token
             $user->fcm = $request->fcm;
             $user->save();
@@ -840,6 +816,30 @@ class AuthController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Something went wrong',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+	public function getLoggedInUserInfo()
+    {
+        try {
+            $user = Auth::user();
+
+            if (! $user) {
+                return response()->json(['error' => 'Unauthorized'], 401);
+            }
+
+            return response()->json([
+                'name' => $user->name ?? null,
+                'image' => $user->image ? 'public/'.$user->image : 'https://ranglerzwp.xyz/myren/public/admin/assets/images/avator.png',
+                'country' => $user->country ?? null,
+                'email' => $user->email ?? null,
+                'phone' => $user->phone ?? null,
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Something Went Wrong.',
                 'error' => $e->getMessage(),
             ], 500);
         }
