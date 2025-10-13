@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\SeoController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\ContactController;
+use App\Http\Controllers\Admin\CustomFormsController;
 use App\Http\Controllers\Admin\SecurityController;
 use App\Http\Controllers\Admin\SubAdminController;
 use App\Http\Controllers\Admin\NotificationController;
@@ -53,8 +54,13 @@ Route::prefix('admin')->middleware(['admin', 'check.subadmin.status'])->group(fu
 
     // ############ Role Permissions #################
 
+
+
     // Route::get('roles-permission', [RolePermissionController::class, 'index'])->name('role-permission')->middleware('check.permission:role,view');
 
+// form controller routes
+
+    Route::get('forms-create/{formId}', [CustomFormsController::class, 'create'])->name('forms.create');
 
 
             // ############ Roles #################
