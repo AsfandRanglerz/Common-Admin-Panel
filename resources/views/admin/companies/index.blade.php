@@ -1,5 +1,5 @@
 @extends('admin.layout.app')
-@section('title', 'Users')
+@section('title', 'Companies Forms List')
 
 @section('content')
 <div class="main-content" style="min-height: 562px;">
@@ -11,68 +11,42 @@
                         <div class="card-header">
                             <h4>Users</h4>
                         </div>
+						
                         <div class="card-body table-striped table-bordered table-responsive">
+							<a href="{{ route('forms.create') }}" class="btn btn-primary">Create</a>
                             <table class="table" id="table_id_events">
                                 <thead>
                                     <tr>
                                         <th>Sr.</th>
-                                        <th>Image</th>
-                                        <th>Name</th>
-                                        <th>Email</th>
-                                        <th>Phone</th>
-                                        <th>Toggle</th>
-										<th>Form Responses</th>
+                                        <th>Company Name</th>
+                                        <th>Form Name</th>
+                                        <th>Form Type</th>
+                                        <th>View Form Details</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($users as $user)
+                                    @foreach ($forms as $form )
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>
-                                            @if ($user->image)
-                                            <img src="{{ asset('public/' . $user->image) }}"
-                                                style="width: 70px; height: 70px;">
-                                            @else
-                                            <img src="{{ asset('public/admin/assets/images/avator.png') }}"
-                                                style="width: 70px; height: 70px;">
-                                            @endif
-                                        </td>
-                                        <td>{{ $user->name ?? '-' }}</td>
-                                        <td><a href="mailto:{{ $user->email }}">{{ $user->email ?? '-' }}</a>
-                                        </td>
-                                        <td>{{ $user->phone ?? '-' }}</td>
-                                        <td>
-                                            <label class="custom-switch">
-                                                <input type="checkbox" class="custom-switch-input toggle-status"
-                                                    data-id="{{ $user->id }}"
-                                                    {{ $user->toggle ? 'checked' : '' }}>
-                                                <span class="custom-switch-indicator"></span>
-                                                <span class="custom-switch-description">
-                                                    {{ $user->toggle ? 'Activated' : 'Deactivated' }}
-                                                </span>
-                                            </label>
-                                        </td>
-										<td>
-												<a href="{{ route('users.form_responses', $user->id) }}" class="btn btn-primary btn-sm">
-    <i class="fa fa-eye"></i> 
-</a>
-										</td>
+										<td>{{ $form->company->name ?? '-' }}</td>
+										<td>{{ $form->form_name ?? '-' }}</td>
+										 <td>{{ $form->form_step_type ?? '-' }}</td>
+                                       	<td>
+											<a href="{{ route('admin.companies.show', $form->form_no) }}" class="btn btn-primary btn-sm">
+												<i class="fa fa-eye"></i>
+											</a>
+									</td>
                                         <td style="vertical-align: middle;">
                                             <div class="d-flex align-items-center" style="gap: 6px;">
                                                 @if (Auth::guard('admin')->check() ||
                                                 ($sideMenuPermissions->has('Users') && $sideMenuPermissions['Users']->contains('edit')))
-                                                <a href="{{ route('user.edit', $user->id) }}"
-                                                    class="btn btn-primary p-2"
-                                                    style="background-color: #cb84fe;">
-                                                    <i class="fa fa-edit"></i>
-                                                </a>
                                                 @endif
 
                                                 @if (Auth::guard('admin')->check() ||
                                                 ($sideMenuPermissions->has('Users') && $sideMenuPermissions['Users']->contains('delete')))
-                                                <form id="delete-form-{{ $user->id }}"
-                                                    action="{{ route('user.delete', $user->id) }}"
+                                                <form id="delete-form-{{ $form->id }}"
+                                                    action="{{ route('admin.form-fields.destroy', $form->id) }}"
                                                     method="POST">
                                                     @csrf
                                                     @method('DELETE')
@@ -80,7 +54,7 @@
 
                                                 <button class="show_confirm btn p-2"
                                                     style="background-color: #cb84fe;"
-                                                    data-form="delete-form-{{ $user->id }}" type="button">
+                                                    data-form="delete-form-{{ $form->id }}" type="button">
                                                     <i class="fa fa-trash"></i>
                                                 </button>
                                                 @endif
@@ -208,7 +182,7 @@
 
                 Swal.fire({
                     title: 'Are you sure you want to delete this record?',
-                    text: "If you delete this Sub-Admin record, it will be gone forever.",
+                    text: "If you delete this Company Form record, it will be gone forever.",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',

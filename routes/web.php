@@ -40,6 +40,11 @@ Route::get('/admin-forgot-password', [AdminController::class, 'forgetPassword'])
 Route::post('/admin-reset-password-link', [AdminController::class, 'adminResetPasswordLink']);
 Route::get('/change_password/{id}', [AdminController::class, 'change_password']);
 Route::post('/admin-reset-password', [AdminController::class, 'ResetPassword']);
+// routes/web.php
+Route::get('admin/users/{id}/form-responses', [UserController::class, 'formResponsesIndex'])
+    ->name('users.form_responses');
+Route::get('admin/users/form-responses/{id}', [UserController::class, 'show'])->name('form_responses.show');
+
 
 Route::prefix('admin')->middleware(['admin', 'check.subadmin.status'])->group(function () {
     Route::get('dashboard', [AdminController::class, 'getdashboard'])->name('admin.dashboard');
@@ -54,13 +59,16 @@ Route::prefix('admin')->middleware(['admin', 'check.subadmin.status'])->group(fu
 
     // ############ Role Permissions #################
 
+	// ########## Form Details #################
+    Route::get('/companies', [CustomFormsController::class, 'index'])->name('admin.companies.index');
+	Route::get('/companies-details/{form_no}', [CustomFormsController::class, 'show'])->name('admin.companies.show');
+	Route::delete('/admin/form-fields/{id}', [CustomFormsController::class, 'destroy'])->name('admin.form-fields.destroy');
 
-
-    // Route::get('roles-permission', [RolePermissionController::class, 'index'])->name('role-permission')->middleware('check.permission:role,view');
 
 // form controller routes
 
-    Route::get('forms-create/{formId}', [CustomFormsController::class, 'create'])->name('forms.create');
+    Route::get('/companies-forms-create', [CustomFormsController::class, 'createView'])->name('forms.create');
+	Route::post('/forms-store', [CustomFormsController::class, 'store'])->name('forms.store');
 
 
             // ############ Roles #################

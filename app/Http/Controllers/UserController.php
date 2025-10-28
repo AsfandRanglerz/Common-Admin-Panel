@@ -216,26 +216,25 @@ public function update(Request $request, $id)
     }
 
 
-//    public function trashed()
-// {
-//     $users = User::onlyTrashed()->get();
-//     return view('users.trashed', compact('users'));
-// }
-
-// // Restore user
-// public function restore($id)
-// {
-//     User::withTrashed()->findOrFail($id)->restore();
-//     return back()->with('success', 'User restored.');
-// }
-
-// // Force delete
-// public function forceDelete($id)
-// {
-//     User::withTrashed()->findOrFail($id)->forceDelete();
-//     return back()->with('success', 'User permanently deleted.');
-// }
 
 
-    
+public function formResponsesIndex($id)
+{
+    $responses = \App\Models\FormResponse::with(['user', 'company'])
+        ->where('user_id', $id)
+        ->latest()
+        ->get();
+
+    return view('users.formdetails', compact('responses'));
+}
+
+
+
+public function show($id)
+{
+    $response = \App\Models\FormResponse::with(['user', 'company'])->findOrFail($id);
+    return view('users.form_responses_details', compact('response'));
+}
+
+
 }

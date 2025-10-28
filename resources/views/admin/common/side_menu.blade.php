@@ -51,6 +51,18 @@
                 </li>
             @endif
 
+			{{--  dynamic forms --}}
+
+            <!-- @if (Auth::guard('admin')->check() ||
+                    ($sideMenuPermissions->has('Users') && $sideMenuPermissions['Users']->contains('view'))) -->
+                <li class="dropdown {{ request()->is('admin/companies*') ? 'active' : '' }}">
+                    <a href="{{ url('admin/companies') }}" class="nav-link">
+                        <i data-feather="file-text"></i>
+                        <span>Companies Forms</span>
+                    </a>
+                </li>
+            <!-- @endif -->
+
 
             {{--  Blogs --}}
 

@@ -3,12 +3,13 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\FormController;
 use App\Http\Controllers\Admin\SeoController;
 use App\Http\Controllers\SideMenueController;
 use App\Http\Controllers\PermissionController;
-use App\Http\Controllers\SideMenuPermissionController;
-use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ContactUsController;
+use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\SideMenuPermissionController;
 
 
 
@@ -46,6 +47,13 @@ Route::post('/forgotpassword', [AuthController::class, 'forgotPassword']);
 Route::post('/forgotverifyotp', [AuthController::class, 'forgotverifyOtp']);
 Route::post('/resend-otp', [AuthController::class, 'resendOtp']);
 Route::post('/resetpassword', [AuthController::class, 'resetPassword']);
+Route::get('/form-index', [FormController::class, 'index']);
+Route::post('/form-submission', [FormController::class, 'receiveData']);
+Route::get('/form-responses', [FormController::class, 'getFormResponses']);
+Route::get('/companies', [FormController::class, 'getCompanies']);
+Route::get('/companies-for-form/{id}', [FormController::class, 'getCompaniesForForm']);
+Route::get('/companies-form-details/{form_no}', [FormController::class, 'getCompaniesFormDetails']);
+
 
 
 
