@@ -21,7 +21,6 @@
                                         <th>Email</th>
                                         <th>Phone</th>
                                         <th>Toggle</th>
-										<th>Form Responses</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -53,11 +52,6 @@
                                                 </span>
                                             </label>
                                         </td>
-										<td>
-												<a href="{{ route('users.form_responses', $user->id) }}" class="btn btn-primary btn-sm">
-    <i class="fa fa-eye"></i> 
-</a>
-										</td>
                                         <td style="vertical-align: middle;">
                                             <div class="d-flex align-items-center" style="gap: 6px;">
                                                 @if (Auth::guard('admin')->check() ||

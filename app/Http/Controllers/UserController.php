@@ -215,26 +215,4 @@ public function update(Request $request, $id)
         }
     }
 
-
-
-
-public function formResponsesIndex($id)
-{
-    $responses = \App\Models\FormResponse::with(['user', 'company'])
-        ->where('user_id', $id)
-        ->latest()
-        ->get();
-
-    return view('users.formdetails', compact('responses'));
-}
-
-
-
-public function show($id)
-{
-    $response = \App\Models\FormResponse::with(['user', 'company'])->findOrFail($id);
-    return view('users.form_responses_details', compact('response'));
-}
-
-
 }
