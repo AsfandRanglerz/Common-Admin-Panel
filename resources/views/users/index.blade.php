@@ -2,6 +2,7 @@
 @section('title', 'Users')
 
 @section('content')
+<<<<<<< HEAD
 <div class="main-content" style="min-height: 562px;">
     <section class="section">
         <div class="section-body">
@@ -10,6 +11,125 @@
                     <div class="card">
                         <div class="card-header">
                             <h4>Users</h4>
+=======
+    <div class="main-content" style="min-height: 562px;">
+        <section class="section">
+            <div class="section-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Users</h4>
+                            </div>
+                            <div class="card-body table-striped table-bordered table-responsive">
+								 @if (Auth::guard('admin')->check() ||
+                                        ($sideMenuPermissions->has('Users') && $sideMenuPermissions['Users']->contains('create')))
+                                    <a class="btn btn-primary mb-3" href="{{ route('user.createview') }}">Create</a>
+                                @endif
+                                <table class="table" id="table_id_events">
+                                    <thead>
+                                        <tr>
+                                            <th>Sr.</th>
+                                            <th>Image</th>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Phone</th>
+                                            <th>Toggle</th>
+											<th>Open Chat</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($users as $user)
+                                            <tr>
+                                                <td>{{ $loop->iteration }}</td>
+                                                <td>
+             @if ($user->image)
+    <img src="{{ asset('public/'.$user->image) }}" style="width: 70px; height: 70px;">
+@else
+    <img src="{{ asset('public/admin/assets/images/avator.png') }}" style="width: 70px; height: 70px;">
+@endif
+
+                                                </td>
+                                                <td>{{ $user->name ?? '-' }}</td>
+                                                <td><a href="mailto:{{ $user->email }}">{{ $user->email ?? '-' }}</a>
+                                                </td>
+                                                <td>{{ $user->phone ?? '-' }}</td>
+                                                <td>
+                                                    <label class="custom-switch">
+                                                        <input type="checkbox" class="custom-switch-input toggle-status"
+                                                            data-id="{{ $user->id }}"
+                                                            {{ $user->toggle ? 'checked' : '' }}>
+                                                        <span class="custom-switch-indicator"></span>
+                                                        <span class="custom-switch-description">
+                                                            {{ $user->toggle ? 'Activated' : 'Deactivated' }}
+                                                        </span>
+                                                    </label>
+                                                </td>
+												<td>
+													<a href="{{ route('chat.page', $user->id) }}" class="btn btn-success p-2" title="Chat with {{ $user->name }}">
+														<i class="fa fa-comments"></i>
+													</a>
+                                                <td style="vertical-align: middle;">
+                                                    <div class="d-flex align-items-center" style="gap: 6px;">
+                                                        @if (Auth::guard('admin')->check() ||
+                                                                ($sideMenuPermissions->has('Users') && $sideMenuPermissions['Users']->contains('edit')))
+                                                            <a href="{{ route('user.edit', $user->id) }}"
+                                                                class="btn btn-primary p-2"
+                                                                style="background-color: #cb84fe;">
+                                                                <i class="fa fa-edit"></i>
+                                                            </a>
+                                                        @endif
+
+                                                        @if (Auth::guard('admin')->check() ||
+                                                                ($sideMenuPermissions->has('Users') && $sideMenuPermissions['Users']->contains('delete')))
+                                                            <form id="delete-form-{{ $user->id }}"
+                                                                action="{{ route('user.delete', $user->id) }}"
+                                                                method="POST">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                            </form>
+
+                                                            <button class="show_confirm btn p-2"
+                                                                style="background-color: #cb84fe;"
+                                                                data-form="delete-form-{{ $user->id }}" type="button">
+                                                                <i class="fa fa-trash"></i>
+                                                            </button>
+                                                        @endif
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div> <!-- /.card-body -->
+                        </div> <!-- /.card -->
+                    </div> <!-- /.col -->
+                </div> <!-- /.row -->
+            </div> <!-- /.section-body -->
+        </section>
+    </div>
+
+    <!-- Deactivation Modal -->
+    <div class="modal fade" id="deactivationModal" tabindex="-1" role="dialog" aria-labelledby="deactivationModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Deactivation Reason</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="deactivationForm">
+                        @csrf
+                        <input type="hidden" name="user_id" id="deactivatingUserId">
+                        <div class="form-group">
+                            <label>Reason for deactivation:</label>
+                            <textarea class="form-control" id="deactivationReason" name="reason" rows="3"></textarea>
+>>>>>>> b4d95be (first commit)
                         </div>
                         <div class="card-body table-striped table-bordered table-responsive">
                             <table class="table" id="table_id_events">

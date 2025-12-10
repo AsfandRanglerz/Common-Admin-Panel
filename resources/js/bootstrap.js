@@ -26,3 +26,23 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 //     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
 //     forceTLS: true
 // });
+
+import Echo from 'laravel-echo';
+import Pusher from 'pusher-js';
+
+window.Pusher = Pusher;
+
+window.Echo = new Echo({
+    broadcaster: 'pusher',
+    key: import.meta.env.VITE_PUSHER_APP_KEY,
+    cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER || 'mt1',
+    forceTLS: true,
+    encrypted: true
+});
+
+// Real-time listening add karein
+window.Echo.private(`chat.${receiver_id}`)
+    .listen('MessageSent', (e) => {
+        console.log('🔔 New message received:', e);
+        loadMessages(); // Auto refresh messages
+    });

@@ -8,6 +8,7 @@ use App\Models\SideMenuHasPermission;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WebController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Admin\FaqController;
@@ -15,9 +16,9 @@ use App\Http\Controllers\Admin\SeoController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\ContactController;
-use App\Http\Controllers\Admin\CustomFormsController;
 use App\Http\Controllers\Admin\SecurityController;
 use App\Http\Controllers\Admin\SubAdminController;
+use App\Http\Controllers\Admin\CustomFormsController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\RolePermissionController;
 
@@ -106,6 +107,15 @@ Route::prefix('admin')->middleware(['admin', 'check.subadmin.status'])->group(fu
     Route::get('about-us-view', [SecurityController::class, 'AboutUsView']) ->middleware('check.permission:About us,view');
 
     Route::get('logout', [AdminController::class, 'logout']);
+
+	// Chat Routes
+	// routes/web.php
+Route::get('chat-page/{id}', [ChatController::class, 'chatPage'])->name('chat.page');
+Route::post('/send-message', [ChatController::class, 'sendMessage'])->name('chat.send');
+Route::get('/chat/{id}', [ChatController::class, 'getMessages'])->name('chat.get');
+	// routes/web.php
+// routes/web.php
+// Route::post('/send-message', [ChatController::class, 'sendMessage'])->name('chat.send');
 
         // ############ Faq #################
     Route::get('faq', [FaqController::class, 'Faq'])->middleware('check.permission:Faqs,view');

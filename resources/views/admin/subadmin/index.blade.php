@@ -25,6 +25,7 @@
                                             <th>Role</th>
                                             <th>Image</th>
                                             <th>Status</th>
+                                            <th>Open chat</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -55,6 +56,10 @@
                                                         </span>
                                                     </label>
                                                 </td>
+												<td>
+													<a href="{{ route('chat.page', $subAdmin->id) }}" class="btn btn-success p-2" title="Chat with {{ $subAdmin->name }}">
+														<i class="fa fa-comments"></i>
+													</a>
                                                 <td>
                                                     <div class="d-flex">
                                                         @if (Auth::guard('admin')->check() ||
